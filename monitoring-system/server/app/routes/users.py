@@ -1,0 +1,64 @@
+"""
+User management routes — /api/users
+Admin-only endpoints for managing user accounts and roles.
+"""
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
+from ..extensions import db, bcrypt
+from ..models.user import User
+from ..utils.permissions import admin_required
+
+users_bp = Blueprint("users", __name__)
+
+
+@users_bp.get("/")
+@jwt_required()
+@admin_required
+def list_users():
+    role   = request.args.get("role")
+    query  = User.query
+    if role:
+        query = query.filter_by(role=role)
+    users = query.order_by(User.created_at.desc()).all()
+    return jsonify({"users": [u.to_dict() for u in users]}), 200
+
+
+@users_bp.get("/<int:user_id>")
+@jwt_required()
+@admin_required
+def get_user(user_id):
+    user = User.query.get_or_404(user_id)
+    return jsonify({"user": user.to_dict()}), 200
+
+
+@users_bp.patch("/<int:user_id>/role")
+@jwt_required()
+@admin_required
+def update_role(user_id):
+    data = request.get_json(silent=True) or {}
+    new_role = data.get("role")
+    if new_role not in ("user", "admin", "secretary"):
+        return jsonify({"error": "Invalid role. Must be user, admin, or secretary."}), 400
+    user = User.query.get_or_404(user_id)
+    user.role = new_role
+    db.session.commit()
+    return jsonify({"message": f"Role updated to '{new_role}'.", "user": user.to_dict()}), 200
+
+
+@users_bp.patch("/<int:user_id>/toggle-active")
+@jwt_required()
+@admin_required
+def toggle_active(user_id):
+    user = User.query.get_or_404(user_id)
+    user.is_active = not user.is_active
+    db.session.commit()
+    state = "activated" if user.is_active else "deactivated"
+    return jsonify({"message": f"User {state}.", "user": user.to_dict()}), 200
+
+
+@users_bp.get("/secretaries")
+@jwt_required()
+@admin_required
+def list_secretaries():
+    secretaries = User.query.filter_by(role="secretary", is_active=True).all()
+    return jsonify({"secretaries": [u.to_dict() for u in secretaries]}), 200
