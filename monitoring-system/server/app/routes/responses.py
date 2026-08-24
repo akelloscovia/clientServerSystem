@@ -11,7 +11,9 @@ from ..models.response import Response
 from ..models.assignment import AuditLog
 from ..schemas.response_schema import ResponseCreateSchema
 from ..services.notification_service import notify_user
-from ..utils.permissions import staff_required
+from ..utils.permissions import staff_required, active_user_required
+from ..models.assignment import Assignment
+from ..models.status_history import SubmissionStatusHistory
 
 responses_bp = Blueprint("responses", __name__)
 
@@ -32,6 +34,9 @@ def add_response():
 
     actor = _current_user()
     sub = Submission.query.get_or_404(clean["submission_id"])
+    if actor.role == "secretary" and not Assignment.query.filter_by(
+            submission_id=sub.id, assigned_to=actor.id).first():
+        return jsonify({"error": "You can only respond to submissions assigned to you."}), 403
 
     resp = Response(
         submission_id=clean["submission_id"],
@@ -42,7 +47,12 @@ def add_response():
 
     # Update status to under_review if still pending
     if sub.status == "pending":
+        old_status = sub.status
         sub.status = "under_review"
+        db.session.add(SubmissionStatusHistory(
+            submission_id=sub.id, changed_by=actor.id,
+            from_status=old_status, to_status=sub.status
+        ))
 
     # Audit log
     log = AuditLog(
@@ -66,12 +76,16 @@ def add_response():
 
 @responses_bp.get("/<int:submission_id>")
 @jwt_required()
+@active_user_required
 def get_responses(submission_id):
     actor = _current_user()
     sub = Submission.query.get_or_404(submission_id)
 
     # Users can only see their own submission responses
     if actor.role == "user" and sub.user_id != actor.id:
+        return jsonify({"error": "Access denied."}), 403
+    if actor.role == "secretary" and not Assignment.query.filter_by(
+            submission_id=submission_id, assigned_to=actor.id).first():
         return jsonify({"error": "Access denied."}), 403
 
     responses = (Response.query

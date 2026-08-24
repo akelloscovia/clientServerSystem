@@ -1,13 +1,18 @@
+import 'package:flutter/foundation.dart';
+
 /// Application-wide constants.
 class AppConstants {
-  // Base URL — update this to your server IP/domain
-  static const String baseUrl = 'http://10.0.2.2:5000/api'; // Android emulator
-  // static const String baseUrl = 'http://localhost:5000/api'; // iOS / Web
+  static String get baseUrl {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:5000/api';
+    }
+    return 'http://localhost:5000/api';
+  }
 
   // Storage keys
-  static const String tokenKey       = 'access_token';
-  static const String refreshKey     = 'refresh_token';
-  static const String userKey        = 'user_data';
+  static const String tokenKey = 'access_token';
+  static const String refreshKey = 'refresh_token';
+  static const String userKey = 'user_data';
 
   // Submission categories
   static const List<String> categories = [
@@ -28,10 +33,10 @@ class AppConstants {
 
   // Status labels
   static const Map<String, String> statusLabels = {
-    'pending':      'Pending',
+    'pending': 'Pending',
     'under_review': 'Under Review',
-    'assigned':     'Assigned',
-    'resolved':     'Resolved',
-    'closed':       'Closed',
+    'assigned': 'Assigned',
+    'resolved': 'Resolved',
+    'closed': 'Closed',
   };
 }

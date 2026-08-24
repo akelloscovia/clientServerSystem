@@ -6,6 +6,7 @@ from app import create_app
 from app.extensions import db, bcrypt
 from app.models.user import User
 from app.models.submission import Submission
+from app.models.status_history import SubmissionStatusHistory
 
 app = create_app()
 
@@ -45,5 +46,15 @@ with app.app_context():
         db.session.add(user)
         print("✓ Sample user created: user@example.com / User@1234")
 
+    db.session.commit()
+
+    for submission in Submission.query.all():
+        if not submission.status_history:
+            db.session.add(SubmissionStatusHistory(
+                submission_id=submission.id,
+                changed_by=submission.user_id,
+                from_status=None,
+                to_status=submission.status,
+            ))
     db.session.commit()
     print("\n✅ Database seeded successfully!")

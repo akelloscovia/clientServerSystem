@@ -15,18 +15,29 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _subService  = SubmissionService();
+  final _subService = SubmissionService();
   final _authService = AuthService();
   List<Submission> _submissions = [];
-  bool _loading  = true;
+  bool _loading = true;
   String? _error;
   String _filter = '';
-  int _unread    = 0;
+  int _unread = 0;
 
-  final _filters = ['', 'pending', 'under_review', 'assigned', 'resolved', 'closed'];
+  final _filters = [
+    '',
+    'pending',
+    'under_review',
+    'assigned',
+    'resolved',
+    'closed'
+  ];
   final _filterLabels = {
-    '': 'All', 'pending': 'Pending', 'under_review': 'In Review',
-    'assigned': 'Assigned', 'resolved': 'Resolved', 'closed': 'Closed',
+    '': 'All',
+    'pending': 'Pending',
+    'under_review': 'In Review',
+    'assigned': 'Assigned',
+    'resolved': 'Resolved',
+    'closed': 'Closed',
   };
 
   @override
@@ -37,7 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final items = await _subService.getMySubmissions(
         status: _filter.isEmpty ? null : _filter,
@@ -69,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final user = _authService.currentUser;
+    final isClient = user?.role == 'user';
     return Scaffold(
       backgroundColor: const Color(0xFF0a0d14),
       appBar: AppBar(
@@ -77,7 +92,8 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           children: [
             Container(
-              width: 32, height: 32,
+              width: 32,
+              height: 32,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [Color(0xFF3b82f6), Color(0xFF8b5cf6)],
@@ -88,8 +104,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(width: 10),
             const Text('MonitorSys',
-              style: TextStyle(color: Color(0xFFF1F5F9),
-                fontSize: 18, fontWeight: FontWeight.w700)),
+                style: TextStyle(
+                    color: Color(0xFFF1F5F9),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700)),
           ],
         ),
         actions: [
@@ -98,22 +116,26 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               IconButton(
                 icon: const Icon(Icons.notifications_outlined,
-                  color: Color(0xFF94a3b8)),
+                    color: Color(0xFF94a3b8)),
                 onPressed: _loadNotifications,
               ),
               if (_unread > 0)
                 Positioned(
-                  right: 8, top: 8,
+                  right: 8,
+                  top: 8,
                   child: Container(
-                    width: 16, height: 16,
+                    width: 16,
+                    height: 16,
                     decoration: const BoxDecoration(
                       color: Color(0xFFef4444),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
                       child: Text('$_unread',
-                        style: const TextStyle(color: Colors.white,
-                          fontSize: 9, fontWeight: FontWeight.bold)),
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ),
@@ -135,11 +157,16 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Hello, ${user?.name.split(' ').first ?? 'User'} 👋',
-                  style: const TextStyle(color: Color(0xFFF1F5F9),
-                    fontSize: 22, fontWeight: FontWeight.w700)),
+                    style: const TextStyle(
+                        color: Color(0xFFF1F5F9),
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700)),
                 const SizedBox(height: 4),
-                const Text('Track and manage your submissions below.',
-                  style: TextStyle(color: Color(0xFF64748b), fontSize: 14)),
+                Text(
+                    isClient
+                        ? 'Create and track your own submissions below.'
+                        : 'Review and manage assigned submissions below.',
+                    style: TextStyle(color: Color(0xFF64748b), fontSize: 14)),
               ],
             ),
           ),
@@ -156,9 +183,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 final f = _filters[i];
                 final active = _filter == f;
                 return GestureDetector(
-                  onTap: () { setState(() => _filter = f); _load(); },
+                  onTap: () {
+                    setState(() => _filter = f);
+                    _load();
+                  },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                     decoration: BoxDecoration(
                       color: active
                           ? const Color(0xFF3b82f6).withOpacity(0.2)
@@ -170,13 +201,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             : const Color(0x12FFFFFF),
                       ),
                     ),
-                    child: Text(_filterLabels[f]!,
+                    child: Text(
+                      _filterLabels[f]!,
                       style: TextStyle(
                         color: active
                             ? const Color(0xFF60a5fa)
                             : const Color(0xFF94a3b8),
                         fontSize: 13,
-                        fontWeight: active ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight:
+                            active ? FontWeight.w600 : FontWeight.normal,
                       ),
                     ),
                   ),
@@ -188,23 +221,29 @@ class _HomeScreenState extends State<HomeScreen> {
           // Submissions list
           Expanded(
             child: _loading
-                ? const Center(child: CircularProgressIndicator(color: Color(0xFF3b82f6)))
+                ? const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF3b82f6)))
                 : _error != null
-                    ? Center(child: Text(_error!,
-                        style: const TextStyle(color: Color(0xFFfca5a5))))
+                    ? Center(
+                        child: Text(_error!,
+                            style: const TextStyle(color: Color(0xFFfca5a5))))
                     : _submissions.isEmpty
                         ? Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Icon(Icons.inbox_outlined,
-                                  size: 64, color: Color(0xFF334155)),
+                                    size: 64, color: Color(0xFF334155)),
                                 const SizedBox(height: 12),
                                 const Text('No submissions yet.',
-                                  style: TextStyle(color: Color(0xFF64748b), fontSize: 15)),
+                                    style: TextStyle(
+                                        color: Color(0xFF64748b),
+                                        fontSize: 15)),
                                 const SizedBox(height: 8),
                                 const Text('Tap + to submit a new case.',
-                                  style: TextStyle(color: Color(0xFF475569), fontSize: 13)),
+                                    style: TextStyle(
+                                        color: Color(0xFF475569),
+                                        fontSize: 13)),
                               ],
                             ),
                           )
@@ -213,12 +252,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             backgroundColor: const Color(0xFF111827),
                             onRefresh: _load,
                             child: ListView.builder(
-                              padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+                              padding:
+                                  const EdgeInsets.fromLTRB(20, 8, 20, 100),
                               itemCount: _submissions.length,
                               itemBuilder: (_, i) => StatusCard(
                                 submission: _submissions[i],
                                 onTap: () async {
-                                  await Navigator.push(context,
+                                  await Navigator.push(
+                                    context,
                                     MaterialPageRoute(
                                       builder: (_) => SubmissionStatusScreen(
                                         submissionId: _submissions[i].id,
@@ -233,17 +274,22 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          await Navigator.push(context,
-            MaterialPageRoute(builder: (_) => const SubmissionScreen()));
-          _load();
-        },
-        backgroundColor: const Color(0xFF3b82f6),
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('New Case',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-      ),
+      floatingActionButton: isClient
+          ? FloatingActionButton.extended(
+              onPressed: () async {
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const SubmissionScreen()));
+                _load();
+              },
+              backgroundColor: const Color(0xFF3b82f6),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('New Case',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w600)),
+            )
+          : null,
     );
   }
 }

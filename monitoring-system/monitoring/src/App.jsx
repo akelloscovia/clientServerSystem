@@ -7,6 +7,8 @@ import Submissions from './pages/Submissions'
 import SubmissionDetail from './pages/SubmissionDetails'
 import Users from './pages/Users'
 import AuditLogs from './pages/AuditLogs'
+import UserPortal from './pages/UserPortal'
+import UserSubmissions from './pages/UserSubmissions'
 
 function ProtectedLayout({ children }) {
   const { user, loading } = useAuth()
@@ -22,18 +24,28 @@ function ProtectedLayout({ children }) {
 
 function AdminOnly({ children }) {
   const { user } = useAuth()
-  if (user?.role !== 'admin') return <Navigate to="/dashboard" replace />
+  if (user?.role !== 'admin') return <Navigate to="/submissions" replace />
   return children
+}
+
+function RoleHome() {
+  const { user } = useAuth()
+  return <Navigate to={user?.role === 'admin' ? '/dashboard' : '/submissions'} replace />
 }
 
 function AppRoutes() {
   const { user } = useAuth()
   return (
     <Routes>
+      {/* Public user portal routes */}
+      <Route path="/user-portal" element={<UserPortal />} />
+      <Route path="/user-submissions" element={<UserSubmissions />} />
+
+      {/* Admin/Staff routes */}
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
 
       <Route path="/dashboard" element={
-        <ProtectedLayout><Dashboard /></ProtectedLayout>
+        <ProtectedLayout><AdminOnly><Dashboard /></AdminOnly></ProtectedLayout>
       } />
       <Route path="/submissions" element={
         <ProtectedLayout><Submissions /></ProtectedLayout>
@@ -48,7 +60,8 @@ function AppRoutes() {
         <ProtectedLayout><AdminOnly><AuditLogs /></AdminOnly></ProtectedLayout>
       } />
 
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/" element={<Navigate to="/user-portal" replace />} />
+      <Route path="*" element={<RoleHome />} />
     </Routes>
   )
 }

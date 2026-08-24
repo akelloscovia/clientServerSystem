@@ -23,6 +23,7 @@ class BaseConfig:
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
+    CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
     SQLALCHEMY_DATABASE_URI = os.getenv(
         "DATABASE_URL", "sqlite:///monitoring_dev.db"
     )

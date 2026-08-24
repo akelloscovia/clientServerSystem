@@ -43,7 +43,13 @@ def list_submissions():
     per_page = request.args.get("per_page", 20, type=int)
     status  = request.args.get("status")
     category = request.args.get("category")
-    result, code = get_submissions(user, page, per_page, status, category)
+    priority = request.args.get("priority")
+    search = request.args.get("search")
+    date_from = request.args.get("from")
+    date_to = request.args.get("to")
+    assigned_to = request.args.get("assigned_to", type=int)
+    result, code = get_submissions(user, page, per_page, status, category, priority,
+                                   search, date_from, date_to, assigned_to)
     return jsonify(result), code
 
 
@@ -100,3 +106,45 @@ def list_assignments():
     else:
         items = Assignment.query.all()
     return jsonify({"assignments": [a.to_dict() for a in items]}), 200
+
+
+@submissions_bp.get("/<int:sub_id>/status-history")
+@jwt_required()
+@active_user_required
+def status_history(sub_id):
+    from ..services.submission_service import get_status_history
+    result, code = get_status_history(sub_id, _current_user())
+    return jsonify(result), code
+
+
+@submissions_bp.get("/user")
+@jwt_required()
+def user_submissions():
+    """
+    Get submissions for a user via token (web portal access).
+    Can be accessed with a user token from the portal.
+    """
+    user = _current_user()
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 20, type=int)
+    
+    if not user.is_active:
+        return jsonify({"error": "Account is inactive"}), 403
+    
+    result, code = get_submissions(
+        user, page, per_page, 
+        status=None, category=None, priority=None,
+        search=None, date_from=None, date_to=None, assigned_to=None
+    )
+    
+    if code == 200:
+        return jsonify({
+            "user": {"id": user.id, "email": user.email, "name": user.name},
+            "submissions": result.get("submissions", []),
+            "total": result.get("total", 0),
+            "pages": result.get("pages", 0),
+            "page": page
+        }), 200
+    
+    return jsonify(result), code
+

@@ -40,6 +40,8 @@ class Submission(db.Model):
                                   uselist=False, cascade="all, delete-orphan")
     notifications = db.relationship("Notification", back_populates="submission",
                                     cascade="all, delete-orphan", lazy="dynamic")
+    status_history = db.relationship("SubmissionStatusHistory", back_populates="submission",
+                                     cascade="all, delete-orphan", order_by="SubmissionStatusHistory.changed_at.asc()")
 
     def __repr__(self):
         return f"<Submission {self.id}: {self.title[:30]} [{self.status}]>"
@@ -59,4 +61,5 @@ class Submission(db.Model):
         }
         if include_responses:
             data["responses"] = [r.to_dict() for r in self.responses.all()]
+            data["status_history"] = [h.to_dict() for h in self.status_history]
         return data

@@ -12,6 +12,11 @@ def _get_current_user() -> User | None:
     return User.query.get(user_id)
 
 
+def current_user() -> User | None:
+    """Return the database user for the current token, if it still exists."""
+    return _get_current_user()
+
+
 def roles_required(*roles):
     """Decorator: allow only users with one of the given roles."""
     def decorator(fn):

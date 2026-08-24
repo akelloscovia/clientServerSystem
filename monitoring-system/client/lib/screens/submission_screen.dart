@@ -177,10 +177,10 @@ class _SubmissionScreenState extends State<SubmissionScreen> {
               ],
 
               AppFormField(
-                label: 'TITLE',
-                hint: 'Brief title of your case',
+                label: 'NAME/COMPANY',
+                hint: 'Enter your name or company name',
                 controller: _titleCtrl,
-                validator: (v) => Validators.validateMinLength(v, 5, 'Title'),
+                validator: (v) => Validators.validateMinLength(v, 5, 'Name/Company'),
               ),
               const SizedBox(height: 16),
 

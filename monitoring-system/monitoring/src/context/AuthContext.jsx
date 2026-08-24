@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (email, password) => {
     const u = await authService.login(email, password)
-    // Only allow admin and secretary to access the dashboard
+    // The monitoring portal is for operational staff; end users use the client app.
     if (u.role === 'user') {
       authService.logout()
       throw new Error('Access denied. This portal is for administrators and secretaries only.')

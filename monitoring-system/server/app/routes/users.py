@@ -3,10 +3,11 @@ User management routes — /api/users
 Admin-only endpoints for managing user accounts and roles.
 """
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import db, bcrypt
 from ..models.user import User
 from ..utils.permissions import admin_required
+from ..models.assignment import AuditLog
 
 users_bp = Blueprint("users", __name__)
 
@@ -40,7 +41,10 @@ def update_role(user_id):
     if new_role not in ("user", "admin", "secretary"):
         return jsonify({"error": "Invalid role. Must be user, admin, or secretary."}), 400
     user = User.query.get_or_404(user_id)
+    old_role = user.role
     user.role = new_role
+    db.session.add(AuditLog(user_id=int(get_jwt_identity()), action="UPDATE_USER_ROLE", entity_type="user",
+                            entity_id=user.id, details=f"{old_role} -> {new_role}"))
     db.session.commit()
     return jsonify({"message": f"Role updated to '{new_role}'.", "user": user.to_dict()}), 200
 
@@ -50,7 +54,11 @@ def update_role(user_id):
 @admin_required
 def toggle_active(user_id):
     user = User.query.get_or_404(user_id)
+    if user.id == int(get_jwt_identity()):
+        return jsonify({"error": "You cannot deactivate your own account."}), 409
     user.is_active = not user.is_active
+    db.session.add(AuditLog(user_id=int(get_jwt_identity()), action="TOGGLE_USER_ACTIVE", entity_type="user",
+                            entity_id=user.id, details=f"is_active={user.is_active}"))
     db.session.commit()
     state = "activated" if user.is_active else "deactivated"
     return jsonify({"message": f"User {state}.", "user": user.to_dict()}), 200

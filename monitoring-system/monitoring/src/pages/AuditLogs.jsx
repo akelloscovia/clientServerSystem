@@ -84,7 +84,7 @@ export default function AuditLogs() {
                     <td className="text-muted text-sm">
                       {log.entity_type && `${log.entity_type} #${log.entity_id}`}
                     </td>
-                    <td className="text-muted text-sm" style={{ maxWidth: '260px' }} className="truncate">
+                    <td className="text-muted text-sm truncate" style={{ maxWidth: '260px' }}>
                       {log.details || '—'}
                     </td>
                     <td className="text-muted text-sm" style={{ fontFamily: 'monospace' }}>

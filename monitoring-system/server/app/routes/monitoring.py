@@ -27,6 +27,8 @@ def stats():
 def audit_logs():
     page     = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 50, type=int)
+    if page < 1 or per_page < 1 or per_page > 100:
+        return jsonify({"error": "page must be >= 1 and per_page must be between 1 and 100."}), 400
     result, code = get_audit_logs(page, per_page)
     return jsonify(result), code
 

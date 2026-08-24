@@ -88,8 +88,8 @@ export default function SubmissionDetail() {
           </button>
           <h1 className="page-title" style={{ marginTop: '8px' }}>Case #{id}</h1>
         </div>
-        {/* Status changer */}
-        {user?.role !== 'user' && (
+        {/* Admins manage any case; secretaries can update only assigned cases. */}
+        {(user?.role === 'admin' || user?.role === 'secretary') && (
           <div className="flex gap-8 items-center flex-wrap">
             <span className="text-muted text-sm">Change Status:</span>
             {STATUSES.map(s => (
@@ -197,8 +197,8 @@ export default function SubmissionDetail() {
         }
       </div>
 
-      {/* Response form (staff only) */}
-      {user?.role !== 'user' && (
+      {/* Admins can reply to any case; secretaries are checked against assignment by the API. */}
+      {(user?.role === 'admin' || user?.role === 'secretary') && (
         <ResponseForm submissionId={parseInt(id)} onSuccess={load} />
       )}
     </div>

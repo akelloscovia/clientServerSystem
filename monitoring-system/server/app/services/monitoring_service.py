@@ -17,7 +17,8 @@ def get_stats() -> tuple[dict, int]:
     resolved      = Submission.query.filter_by(status="resolved").count()
     closed        = Submission.query.filter_by(status="closed").count()
     total_users   = User.query.filter_by(role="user").count()
-    secretaries   = User.query.filter_by(role="secretary").count()
+    secretaries   = User.query.filter_by(role="secretary", is_active=True).count()
+    total_staff   = User.query.filter(User.role.in_(["admin", "secretary"])).count()
 
     # Submissions by category
     by_category = (
@@ -52,10 +53,16 @@ def get_stats() -> tuple[dict, int]:
             "closed":       closed,
             "total_users":  total_users,
             "secretaries":  secretaries,
+            "total_staff": total_staff,
         },
         "by_category": {cat: cnt for cat, cnt in by_category},
         "by_priority":  {pri: cnt for pri, cnt in by_priority},
         "daily_trend":  daily,
+        "queue": {
+            "oldest_pending": Submission.query.filter_by(status="pending")
+                .order_by(Submission.created_at.asc(), Submission.id.asc()).first().to_dict()
+                if Submission.query.filter_by(status="pending").first() else None,
+        },
     }, 200
 
 
