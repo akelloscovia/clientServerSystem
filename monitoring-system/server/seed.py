@@ -2,11 +2,14 @@
 Seed script — creates initial admin user and sample data.
 Run: python seed.py
 """
+from datetime import time
 from app import create_app
 from app.extensions import db, bcrypt
 from app.models.user import User
 from app.models.submission import Submission
 from app.models.status_history import SubmissionStatusHistory
+from app.models.channel import Channel
+from app.models.program import Program
 
 app = create_app()
 
@@ -56,5 +59,35 @@ with app.app_context():
                 from_status=None,
                 to_status=submission.status,
             ))
+    db.session.commit()
+
+    # Sample TV channel — replace/add real ones from the Channels page in the dashboard.
+    if not Channel.query.first():
+        db.session.add(Channel(
+            name="Sample Test Stream",
+            stream_url="https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8",
+            stream_type="hls",
+            sort_order=0,
+        ))
+        print("✓ Sample TV channel added (replace with a real channel from the dashboard)")
+
+    # Sample daily programs — edit/replace from the Programs page in the dashboard.
+    if not Program.query.first():
+        db.session.add_all([
+            Program(title="Morning Briefing", day="daily",
+                    start_time=time(8, 0), end_time=time(8, 30),
+                    location="Main Hall",
+                    description="Daily briefing for staff and visitors."),
+            Program(title="Public Service Hours", day="daily",
+                    start_time=time(9, 0), end_time=time(16, 0),
+                    location="Reception",
+                    description="Front desk open for visitor inquiries."),
+            Program(title="Community Outreach", day="friday",
+                    start_time=time(14, 0), end_time=time(16, 0),
+                    location="Seminar Room",
+                    description="Weekly outreach session."),
+        ])
+        print("✓ Sample daily programs added (edit these from the dashboard)")
+
     db.session.commit()
     print("\n✅ Database seeded successfully!")

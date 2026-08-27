@@ -25,6 +25,14 @@ dependencies:
   # Icons
   cupertino_icons: ^1.0.8
 
+  # Kiosk mode: QR code for the visitor sign-in link
+  qr_flutter: ^4.1.0
+
+  # Kiosk mode: TV channel playback
+  video_player: ^2.9.2
+  chewie: ^1.8.5
+  webview_flutter: ^4.9.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

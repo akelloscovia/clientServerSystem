@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import QRCodeScanner from '../components/QRCodeScanner'
 import QRCodeGenerator from '../components/QRCodeGenerator'
-import { api } from '../services/api'
+import api from '../services/api'
 import './UserPortal.css'
 
 export default function UserPortal() {

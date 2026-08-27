@@ -1,4 +1,4 @@
-import QRCode from 'qrcode.react'
+import { QRCodeCanvas } from 'qrcode.react'
 import { useRef } from 'react'
 import './QRCodeGenerator.css'
 
@@ -17,12 +17,11 @@ export default function QRCodeGenerator({ data, label = 'Scan QR Code', size = 2
   return (
     <div className="qr-generator-container">
       <div className="qr-code-wrapper" ref={qrRef}>
-        <QRCode 
-          value={data || 'No data'} 
+        <QRCodeCanvas
+          value={data || 'No data'}
           size={size}
           level="H"
           includeMargin={true}
-          renderAs="canvas"
         />
       </div>
       <p className="qr-label">{label}</p>

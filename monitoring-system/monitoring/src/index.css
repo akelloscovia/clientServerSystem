@@ -196,6 +196,7 @@ body {
 .badge-under_review  { background: rgba(99,102,241,0.15); color: var(--info); }
 .badge-assigned      { background: rgba(59,130,246,0.15); color: var(--accent); }
 .badge-resolved      { background: rgba(16,185,129,0.15); color: var(--success); }
+.badge-attended      { background: rgba(16,185,129,0.15); color: var(--success); }
 .badge-closed        { background: rgba(100,116,139,0.15); color: var(--text-muted); }
 
 .badge-low     { background: rgba(16,185,129,0.1); color: var(--success); }

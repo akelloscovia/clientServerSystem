@@ -5,6 +5,9 @@ import './Sidebar.css'
 const NAV_ITEMS = [
   { path: '/dashboard', label: 'Dashboard', icon: '📊', roles: ['admin'] },
   { path: '/submissions', label: 'Submissions', icon: '📋', roles: ['admin', 'secretary'] },
+  { path: '/visitor-log', label: 'Visitor Log', icon: '🧾', roles: ['admin', 'secretary'] },
+  { path: '/programs', label: 'Programs', icon: '📅', roles: ['admin', 'secretary'] },
+  { path: '/channels', label: 'TV Channels', icon: '📺', roles: ['admin'] },
   { path: '/users', label: 'Users', icon: '👥', roles: ['admin'] },
   { path: '/audit-logs', label: 'Audit Logs', icon: '🔍', roles: ['admin'] },
 ]

@@ -12,6 +12,9 @@ from .routes.submissions import submissions_bp
 from .routes.responses import responses_bp
 from .routes.monitoring import monitoring_bp
 from .routes.users import users_bp
+from .routes.visitors import visitors_bp
+from .routes.programs import programs_bp
+from .routes.channels import channels_bp
 from .models.user import User
 from .services.submission_service import get_submissions
 from .utils.permissions import active_user_required
@@ -42,6 +45,9 @@ def create_app(config_name: str = None) -> Flask:
     app.register_blueprint(responses_bp,   url_prefix="/api/responses")
     app.register_blueprint(monitoring_bp,  url_prefix="/api/monitoring")
     app.register_blueprint(users_bp,       url_prefix="/api/users")
+    app.register_blueprint(visitors_bp,    url_prefix="/api/visitors")
+    app.register_blueprint(programs_bp,    url_prefix="/api/programs")
+    app.register_blueprint(channels_bp,    url_prefix="/api/channels")
 
     # Keep the documented v1 path available while existing clients migrate.
     app.register_blueprint(auth_bp,        url_prefix="/api/v1/auth", name="auth_v1")
@@ -49,6 +55,9 @@ def create_app(config_name: str = None) -> Flask:
     app.register_blueprint(responses_bp,   url_prefix="/api/v1/responses", name="responses_v1")
     app.register_blueprint(monitoring_bp,  url_prefix="/api/v1/monitoring", name="monitoring_v1")
     app.register_blueprint(users_bp,       url_prefix="/api/v1/users", name="users_v1")
+    app.register_blueprint(visitors_bp,    url_prefix="/api/v1/visitors", name="visitors_v1")
+    app.register_blueprint(programs_bp,    url_prefix="/api/v1/programs", name="programs_v1")
+    app.register_blueprint(channels_bp,    url_prefix="/api/v1/channels", name="channels_v1")
 
     # Health check
     @app.get("/api/health")
@@ -91,7 +100,10 @@ def create_app(config_name: str = None) -> Flask:
 
     # Import models so Flask-Migrate can detect them
     with app.app_context():
-        from .models import user, submission, response, assignment, notification, status_history  # noqa
+        from .models import (
+            user, submission, response, assignment, notification, status_history,
+            visitor_log, program, channel,
+        )  # noqa
         if env == "development":
             db.create_all()
 

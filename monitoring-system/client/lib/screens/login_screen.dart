@@ -5,6 +5,7 @@ import '../widgets/form_field.dart';
 import '../widgets/submit_button.dart';
 import 'home_screen.dart';
 import 'staff_dashboard_screen.dart';
+import 'kiosk_home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -72,12 +73,14 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0a0d14),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
                 // Logo
                 Container(
                   width: 72,
@@ -251,10 +254,39 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-              ],
+                  ],
+                ),
+              ),
             ),
           ),
+          Positioned(
+            top: 12,
+            left: 12,
+            child: SafeArea(
+              child: _buildBackButton(context),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBackButton(BuildContext context) {
+    return InkWell(
+      onTap: () => Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const KioskHomeScreen()),
+        (route) => false,
+      ),
+      borderRadius: BorderRadius.circular(99),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: const Color(0xFF111827),
+          shape: BoxShape.circle,
+          border: Border.all(color: const Color(0x12FFFFFF)),
         ),
+        child: const Icon(Icons.arrow_back_ios_new,
+            size: 16, color: Color(0xFF94a3b8)),
       ),
     );
   }

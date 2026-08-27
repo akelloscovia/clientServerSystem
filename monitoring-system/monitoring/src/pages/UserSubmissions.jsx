@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import QRCodeGenerator from '../components/QRCodeGenerator'
-import { api } from '../services/api'
-import '../pages/Submissions.css'
+import api from '../services/api'
+import './UserSubmissions.css'
 
 export default function UserSubmissions() {
   const [searchParams] = useSearchParams()

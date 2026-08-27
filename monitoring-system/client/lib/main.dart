@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/staff_dashboard_screen.dart';
+import 'screens/kiosk_home_screen.dart';
 import 'services/auth_service.dart';
 
 void main() async {
@@ -52,7 +52,7 @@ class MonitoringClientApp extends StatelessWidget {
         ),
       ),
       home: !isLoggedIn
-          ? const LoginScreen()
+          ? const KioskHomeScreen()
           : AuthService().currentUser?.role == 'user'
               ? const HomeScreen()
               : const StaffDashboardScreen(),

@@ -9,6 +9,21 @@ class AppConstants {
     return 'http://localhost:5000/api';
   }
 
+  /// Base URL of the web dashboard (React), used to build the visitor
+  /// sign-in link shown as a QR code on the reception kiosk.
+  static String get webPortalBaseUrl {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:5173';
+    }
+    return 'http://localhost:5173';
+  }
+
+  static String get visitorFormUrl => '$webPortalBaseUrl/visitor-form';
+
+  // Kiosk branding
+  static const String orgName = 'Ministry of ICT & National Guidance';
+  static const String orgTag = 'MINISTRY';
+
   // Storage keys
   static const String tokenKey = 'access_token';
   static const String refreshKey = 'refresh_token';
