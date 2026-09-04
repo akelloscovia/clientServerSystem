@@ -6,6 +6,8 @@ Flask-Bcrypt==1.0.1
 Flask-CORS==4.0.1
 marshmallow==3.21.3
 psycopg2-binary>=2.9.11
+PyMySQL==1.1.1
+cryptography>=42.0.0
 python-dotenv==1.0.1
 SQLAlchemy>=2.0.45
 alembic==1.13.1
