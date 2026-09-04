@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'screens/home_screen.dart';
+import 'screens/login_screen.dart';
 import 'screens/main_shell.dart';
 import 'services/auth_service.dart';
 
@@ -50,12 +51,15 @@ class MonitoringClientApp extends StatelessWidget {
           centerTitle: false,
         ),
       ),
-      // One shell for everything public-facing (Programs / TV / Visitor
-      // Sign-In / Admin Portal). Only a signed-in client goes straight to
-      // their own case list.
-      home: isLoggedIn && AuthService().currentUser?.role == 'user'
-          ? const HomeScreen()
-          : const MainShell(),
+      // The app opens on the login screen; signing in leads to the home
+      // page (MainShell). A restored session skips the login screen — a
+      // client lands on their own case list, staff on the home page (the
+      // Admin Portal tab there shows the dashboard).
+      home: !isLoggedIn
+          ? const LoginScreen()
+          : AuthService().currentUser?.role == 'user'
+              ? const HomeScreen()
+              : const MainShell(),
     );
   }
 }

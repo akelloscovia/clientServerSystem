@@ -3,7 +3,6 @@ import '../services/auth_service.dart';
 import '../utils/validators.dart';
 import '../widgets/form_field.dart';
 import '../widgets/submit_button.dart';
-import 'staff_dashboard_screen.dart';
 import 'main_shell.dart';
 
 /// Staff-only sign in (admin / secretary). Regular clients use
@@ -51,8 +50,11 @@ class _LoginScreenState extends State<LoginScreen> {
       if (widget.embedded) {
         widget.onSignedIn?.call();
       } else {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const StaffDashboardScreen()),
+        // Sign in leads to the home page; the Admin Portal tab inside the
+        // shell shows the staff dashboard now that a session exists.
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const MainShell()),
+          (route) => false,
         );
       }
     } catch (e) {
