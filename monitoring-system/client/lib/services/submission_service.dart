@@ -115,6 +115,20 @@ class SubmissionService {
         .toList();
   }
 
+  /// Admin: create a staff / client account with an explicit role.
+  Future<User> registerStaff(
+      String name, String email, String password, String role) async {
+    final resp = await _api.post('/users/', {
+      'name': name.trim(),
+      'email': email.trim(),
+      'password': password,
+      'role': role,
+    });
+    ApiService.checkError(resp);
+    return User.fromJson(
+        ApiService.decodeJson(resp)['user'] as Map<String, dynamic>);
+  }
+
   Future<User> updateUserRole(int userId, String role) async {
     final resp = await _api.patch('/users/$userId/role', {'role': role});
     ApiService.checkError(resp);

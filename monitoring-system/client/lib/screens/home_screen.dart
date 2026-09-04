@@ -5,7 +5,7 @@ import '../services/submission_service.dart';
 import '../widgets/status_card.dart';
 import 'submission_screen.dart';
 import 'submission_status_screen.dart';
-import 'login_screen.dart';
+import 'main_shell.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await _authService.logout();
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        MaterialPageRoute(builder: (_) => const MainShell()),
       );
     }
   }

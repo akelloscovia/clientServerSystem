@@ -4,12 +4,33 @@ Admin-only endpoints for managing user accounts and roles.
 """
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from marshmallow import ValidationError, EXCLUDE
 from ..extensions import db, bcrypt
 from ..models.user import User
+from ..schemas.auth_schema import RegisterSchema
+from ..services.auth_service import create_staff_user
 from ..utils.permissions import admin_required
 from ..models.assignment import AuditLog
 
 users_bp = Blueprint("users", __name__)
+
+
+@users_bp.post("/")
+@jwt_required()
+@admin_required
+def create_user():
+    """Admin creates an account with an explicit role (staff or client)."""
+    data = request.get_json(silent=True) or {}
+    try:
+        clean = RegisterSchema(unknown=EXCLUDE).load(data)
+    except ValidationError as e:
+        return jsonify({"errors": e.messages}), 422
+    role = (data.get("role") or "secretary").strip()
+    result, code = create_staff_user(
+        clean["name"], clean["email"], clean["password"], role,
+        int(get_jwt_identity()),
+    )
+    return jsonify(result), code
 
 
 @users_bp.get("/")

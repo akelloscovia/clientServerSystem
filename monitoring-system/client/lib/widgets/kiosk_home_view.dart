@@ -1,119 +1,57 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import '../models/program.dart';
-import '../services/kiosk_service.dart';
 import '../utils/constants.dart';
-import '../widgets/programs_view.dart';
-import '../widgets/tv_channel_view.dart';
-import '../widgets/kiosk_header.dart';
-import '../widgets/news_ticker.dart';
-import 'login_screen.dart';
+import 'programs_view.dart';
+import 'tv_channel_view.dart';
 
 enum _KioskMode { programs, split, tv }
 
-/// Reception kiosk screen — shown by default on the reception device.
-/// Switches between the daily program schedule, TV channels, or both side
-/// by side (either side can hold either pane), and always shows a QR code
-/// visitors can scan to fill in the sign-in form.
-class KioskHomeScreen extends StatefulWidget {
-  const KioskHomeScreen({super.key});
+/// The reception "home" screen: today's programme schedule and the TV
+/// channels shown together (or either one full-width), plus a visitor
+/// sign-in panel with both a QR code and an on-screen button for visitors
+/// who don't have a phone to hand.
+class KioskHomeView extends StatefulWidget {
+  /// Called when the visitor taps "Sign in here" — the shell switches to
+  /// the Visitor Sign-In tab.
+  final VoidCallback onOpenVisitorForm;
+
+  const KioskHomeView({super.key, required this.onOpenVisitorForm});
 
   @override
-  State<KioskHomeScreen> createState() => _KioskHomeScreenState();
+  State<KioskHomeView> createState() => _KioskHomeViewState();
 }
 
-class _KioskHomeScreenState extends State<KioskHomeScreen> {
-  static const _dayNames = [
-    'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
-  ];
-
+class _KioskHomeViewState extends State<KioskHomeView> {
   _KioskMode _mode = _KioskMode.split;
-  // Split mode only: which pane sits on the right.
   bool _tvOnRight = true;
-
-  final _kiosk = KioskService();
-  List<String> _tickerItems = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadTicker();
-  }
-
-  Future<void> _loadTicker() async {
-    try {
-      final today = _dayNames[DateTime.now().weekday - 1];
-      final programs = await _kiosk.getPrograms(day: today);
-      programs.sort((a, b) => a.startMinutes.compareTo(b.startMinutes));
-      if (!mounted) return;
-      setState(() => _tickerItems = programs.map(_tickerLabel).toList());
-    } catch (_) {
-      // Ticker is decorative — silently skip if the programs fetch fails.
-    }
-  }
-
-  String _tickerLabel(Program program) {
-    String label(String hhmm) {
-      final parts = hhmm.split(':');
-      final h = int.tryParse(parts[0]) ?? 0;
-      final m = parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0;
-      final dt = DateTime(2000, 1, 1, h, m);
-      return DateFormat('h:mma').format(dt).toLowerCase();
-    }
-
-    final where = (program.location ?? '').isNotEmpty ? ' (${program.location})' : '';
-    return '${program.title} · ${label(program.startTime)}–${label(program.endTime)}$where';
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0a0d14),
-      body: SafeArea(
-        child: Column(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final wide = constraints.maxWidth > 800;
+        final main = Column(
           children: [
-            KioskHeader(
-              trailing: IconButton(
-                icon: const Icon(Icons.login, color: Colors.white),
-                tooltip: 'Staff login',
-                onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen())),
-              ),
-            ),
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final wide = constraints.maxWidth > 800;
-                  final main = Column(
-                    children: [
-                      _buildToggle(),
-                      Expanded(child: _buildContent()),
-                    ],
-                  );
-                  if (wide) {
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(child: main),
-                        SizedBox(width: 280, child: _buildQrPanel(vertical: true)),
-                      ],
-                    );
-                  }
-                  return Column(
-                    children: [
-                      Expanded(child: main),
-                      _buildQrPanel(vertical: false),
-                    ],
-                  );
-                },
-              ),
-            ),
-            NewsTicker(items: _tickerItems),
+            _buildToggle(),
+            Expanded(child: _buildContent()),
           ],
-        ),
-      ),
+        );
+        if (wide) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(child: main),
+              SizedBox(width: 300, child: _buildQrPanel(vertical: true)),
+            ],
+          );
+        }
+        return Column(
+          children: [
+            Expanded(child: main),
+            _buildQrPanel(vertical: false),
+          ],
+        );
+      },
     );
   }
 
@@ -152,8 +90,6 @@ class _KioskHomeScreenState extends State<KioskHomeScreen> {
     }
   }
 
-  /// Programs and TV shown together, either side of a divider with a swap
-  /// button so either pane can sit on the left or right.
   Widget _buildSplitView() {
     const programsPane = ProgramsView();
     const tvPane = TvChannelView();
@@ -236,7 +172,7 @@ class _KioskHomeScreenState extends State<KioskHomeScreen> {
   }
 
   Widget _buildQrPanel({required bool vertical}) {
-    final qrSize = vertical ? 160.0 : 96.0;
+    final qrSize = vertical ? 150.0 : 88.0;
     final qrCode = Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -252,9 +188,27 @@ class _KioskHomeScreenState extends State<KioskHomeScreen> {
         style: const TextStyle(
             color: Color(0xFFF1F5F9), fontWeight: FontWeight.w700, fontSize: 16),
         textAlign: vertical ? TextAlign.center : TextAlign.left);
-    final subtitle = Text('Scan to check in',
+    final subtitle = Text('Scan the code, or sign in on this screen',
         style: const TextStyle(color: Color(0xFF64748b), fontSize: 12),
         textAlign: vertical ? TextAlign.center : TextAlign.left);
+
+    final signInButton = SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: widget.onOpenVisitorForm,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF3b82f6),
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          elevation: 0,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        icon: const Icon(Icons.how_to_reg, size: 18),
+        label: const Text('Sign in here',
+            style: TextStyle(fontWeight: FontWeight.w700)),
+      ),
+    );
 
     return Container(
       margin: const EdgeInsets.all(16),
@@ -268,7 +222,18 @@ class _KioskHomeScreenState extends State<KioskHomeScreen> {
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
-              children: [title, const SizedBox(height: 4), subtitle, const SizedBox(height: 16), qrCode],
+              children: [
+                title,
+                const SizedBox(height: 4),
+                subtitle,
+                const SizedBox(height: 16),
+                qrCode,
+                const SizedBox(height: 16),
+                signInButton,
+                const SizedBox(height: 6),
+                const Text('No phone needed',
+                    style: TextStyle(color: Color(0xFF475569), fontSize: 11)),
+              ],
             )
           : Row(
               children: [
@@ -278,7 +243,13 @@ class _KioskHomeScreenState extends State<KioskHomeScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [title, const SizedBox(height: 4), subtitle],
+                    children: [
+                      title,
+                      const SizedBox(height: 4),
+                      subtitle,
+                      const SizedBox(height: 10),
+                      signInButton,
+                    ],
                   ),
                 ),
               ],

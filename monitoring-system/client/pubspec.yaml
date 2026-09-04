@@ -32,6 +32,7 @@ dependencies:
   video_player: ^2.9.2
   chewie: ^1.8.5
   webview_flutter: ^4.9.0
+  fl_chart: ^1.2.0
 
 dev_dependencies:
   flutter_test:

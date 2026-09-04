@@ -1,11 +1,14 @@
 """
 Auth routes — /api/auth
 """
+import secrets
+
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from marshmallow import ValidationError
+from ..extensions import db, bcrypt
 from ..schemas.auth_schema import RegisterSchema, LoginSchema
-from ..services.auth_service import register_user, login_user
+from ..services.auth_service import register_user, login_user, _make_tokens
 from ..models.user import User
 from ..utils.permissions import active_user_required
 
@@ -68,33 +71,38 @@ def me():
 @auth_bp.post("/user-portal")
 def user_portal_access():
     """
-    Allow users to access the portal via email.
-    Generates a temporary token for QR code access.
+    Client-side entry point: identify by email only, no password.
+    Used by the web User Portal and the Flutter client's "Client" role —
+    login stays password-protected for staff (admin/secretary) only.
+    Auto-creates the account on first use.
     """
     data = request.get_json(silent=True) or {}
     email = data.get("email", "").strip().lower()
-    
+    name = data.get("name", "").strip()
+
     if not email:
         return jsonify({"error": "Email is required"}), 400
-    
+
     user = User.query.filter_by(email=email).first()
-    
+
     if not user:
-        # Don't reveal if user exists (security)
-        return jsonify({"error": "If this email exists, a token will be sent"}), 200
-    
+        pw_hash = bcrypt.generate_password_hash(secrets.token_urlsafe(24)).decode("utf-8")
+        user = User(name=name or email.split("@")[0], email=email, password_hash=pw_hash)
+        db.session.add(user)
+        db.session.commit()
+
     if not user.is_active:
         return jsonify({"error": "Account is disabled"}), 403
-    
-    # Create a special token for user portal access
-    token = create_access_token(
-        identity=user.id,
-        additional_claims={"role": user.role, "portal": True}
-    )
-    
+
+    tokens = _make_tokens(user)
+
     return jsonify({
-        "token": token,
+        # Back-compat fields for the web User Portal
+        "token": tokens["access_token"],
         "email": user.email,
-        "user_id": user.id
+        "user_id": user.id,
+        # Full session fields for the Flutter client
+        "user": user.to_dict(),
+        **tokens,
     }), 200
 

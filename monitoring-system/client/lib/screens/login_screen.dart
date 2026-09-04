@@ -3,12 +3,20 @@ import '../services/auth_service.dart';
 import '../utils/validators.dart';
 import '../widgets/form_field.dart';
 import '../widgets/submit_button.dart';
-import 'home_screen.dart';
 import 'staff_dashboard_screen.dart';
-import 'kiosk_home_screen.dart';
+import 'main_shell.dart';
 
+/// Staff-only sign in (admin / secretary). Regular clients use
+/// [ClientAccessScreen] instead — email only, no password.
+///
+/// When [embedded] is true the screen renders without its own Scaffold or
+/// back button so it can sit inside the [MainShell] Admin Portal tab; on a
+/// successful sign in it calls [onSignedIn] instead of navigating.
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final bool embedded;
+  final VoidCallback? onSignedIn;
+
+  const LoginScreen({super.key, this.embedded = false, this.onSignedIn});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -20,9 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passCtrl = TextEditingController();
   bool _loading = false;
   bool _obscure = true;
-  bool _isRegister = false;
-  String _selectedRole = 'user';
-  final _nameCtrl = TextEditingController();
+  String _selectedRole = 'admin';
   String? _error;
 
   final _auth = AuthService();
@@ -34,24 +40,19 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      if (_isRegister) {
-        await _auth.register(_nameCtrl.text, _emailCtrl.text, _passCtrl.text);
-      } else {
-        final user = await _auth.login(_emailCtrl.text, _passCtrl.text);
-        if (user.role != _selectedRole) {
-          await _auth.logout();
-          throw Exception(
-            'This account is registered as ${user.role}. Select the ${user.role} login button.',
-          );
-        }
+      final user = await _auth.login(_emailCtrl.text, _passCtrl.text);
+      if (user.role != _selectedRole) {
+        await _auth.logout();
+        throw Exception(
+          'This account is registered as ${user.role}. Select the ${user.role} login button.',
+        );
       }
-      if (mounted) {
+      if (!mounted) return;
+      if (widget.embedded) {
+        widget.onSignedIn?.call();
+      } else {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (_) => _auth.currentUser?.role == 'user'
-                ? const HomeScreen()
-                : const StaffDashboardScreen(),
-          ),
+          MaterialPageRoute(builder: (_) => const StaffDashboardScreen()),
         );
       }
     } catch (e) {
@@ -65,22 +66,43 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailCtrl.dispose();
     _passCtrl.dispose();
-    _nameCtrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final content = Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: _buildFormColumn(),
+        ),
+      ),
+    );
+
+    if (widget.embedded) {
+      return Container(color: const Color(0xFF0a0d14), child: content);
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFF0a0d14),
       body: Stack(
         children: [
-          SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
+          SafeArea(child: content),
+          Positioned(
+            top: 12,
+            left: 12,
+            child: SafeArea(child: _buildBackButton(context)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFormColumn() {
+    return Column(
+      children: [
                 // Logo
                 Container(
                   width: 72,
@@ -113,38 +135,32 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  _isRegister
-                      ? 'Create a client account'
-                      : '${_roleLabel(_selectedRole)} sign in',
+                  '${_roleLabel(_selectedRole)} sign in',
                   style:
                       const TextStyle(color: Color(0xFF64748b), fontSize: 14),
                 ),
                 const SizedBox(height: 40),
 
-                if (!_isRegister) ...[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('SELECT PORTAL',
-                        style: TextStyle(
-                          color: Color(0xFF64748b),
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.2,
-                        )),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      _roleButton('admin', 'Admin', Icons.admin_panel_settings),
-                      const SizedBox(width: 8),
-                      _roleButton(
-                          'secretary', 'Secretary', Icons.assignment_ind),
-                      const SizedBox(width: 8),
-                      _roleButton('user', 'Client', Icons.person),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('SELECT PORTAL',
+                      style: TextStyle(
+                        color: Color(0xFF64748b),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
+                      )),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    _roleButton('admin', 'Admin', Icons.admin_panel_settings),
+                    const SizedBox(width: 8),
+                    _roleButton(
+                        'secretary', 'Secretary', Icons.assignment_ind),
+                  ],
+                ),
+                const SizedBox(height: 20),
 
                 // Card
                 Container(
@@ -175,16 +191,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 16),
                         ],
-                        if (_isRegister) ...[
-                          AppFormField(
-                            label: 'FULL NAME',
-                            hint: 'John Doe',
-                            controller: _nameCtrl,
-                            validator: (v) =>
-                                Validators.validateRequired(v, 'Name'),
-                          ),
-                          const SizedBox(height: 16),
-                        ],
                         AppFormField(
                           label: 'EMAIL ADDRESS',
                           hint: 'you@example.com',
@@ -198,10 +204,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           hint: '••••••••',
                           controller: _passCtrl,
                           obscureText: _obscure,
-                          validator: _isRegister
-                              ? Validators.validatePassword
-                              : (v) =>
-                                  Validators.validateRequired(v, 'Password'),
+                          validator: (v) =>
+                              Validators.validateRequired(v, 'Password'),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _obscure
@@ -216,9 +220,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 24),
                         SubmitButton(
-                          label: _isRegister ? 'Create Account' : 'Sign In',
-                          icon:
-                              _isRegister ? Icons.person_add : Icons.lock_open,
+                          label: 'Sign In',
+                          icon: Icons.lock_open,
                           loading: _loading,
                           onPressed: _submit,
                         ),
@@ -226,55 +229,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-
-                const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: () => setState(() {
-                    _isRegister = !_isRegister;
-                    _selectedRole = 'user';
-                    _error = null;
-                  }),
-                  child: RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                          fontSize: 14, color: Color(0xFF64748b)),
-                      children: [
-                        TextSpan(
-                            text: _isRegister
-                                ? "Already have an account? "
-                                : "Don't have an account? "),
-                        TextSpan(
-                          text: _isRegister ? 'Sign In' : 'Register',
-                          style: const TextStyle(
-                            color: Color(0xFF3b82f6),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 12,
-            left: 12,
-            child: SafeArea(
-              child: _buildBackButton(context),
-            ),
-          ),
-        ],
-      ),
+      ],
     );
   }
 
   Widget _buildBackButton(BuildContext context) {
     return InkWell(
       onTap: () => Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const KioskHomeScreen()),
+        MaterialPageRoute(builder: (_) => const MainShell()),
         (route) => false,
       ),
       borderRadius: BorderRadius.circular(99),
@@ -295,10 +257,8 @@ class _LoginScreenState extends State<LoginScreen> {
     switch (role) {
       case 'admin':
         return 'Admin portal';
-      case 'secretary':
-        return 'Secretary workspace';
       default:
-        return 'Client portal';
+        return 'Secretary workspace';
     }
   }
 

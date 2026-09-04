@@ -28,6 +28,21 @@ class AuthService {
     return _currentUser!;
   }
 
+  /// Client-side entry: identify by email only, no password. Auto-creates
+  /// the account on first use. Used for the "Client" role instead of the
+  /// password-protected staff login.
+  Future<User> loginByEmail(String email, {String? name}) async {
+    final resp = await _api.post('/auth/user-portal', {
+      'email': email.trim(),
+      if (name != null && name.trim().isNotEmpty) 'name': name.trim(),
+    });
+    ApiService.checkError(resp);
+    final data = ApiService.decodeJson(resp);
+    await _saveSession(data);
+    _currentUser = User.fromJson(data['user'] as Map<String, dynamic>);
+    return _currentUser!;
+  }
+
   Future<User> register(String name, String email, String password) async {
     final resp = await _api.post('/auth/register', {
       'name': name.trim(),

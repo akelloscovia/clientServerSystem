@@ -2,14 +2,14 @@
 Program routes — /api/programs
 
 Listing is public so the reception kiosk can display today's schedule
-without logging in. Creating/editing is admin or secretary; deleting is admin-only.
+without logging in. Creating, editing and deleting are admin or secretary.
 """
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from marshmallow import ValidationError
 from ..schemas.program_schema import ProgramSchema
 from ..services.program_service import list_programs, create_program, update_program, delete_program
-from ..utils.permissions import admin_required, staff_required
+from ..utils.permissions import staff_required
 
 programs_bp = Blueprint("programs", __name__)
 
@@ -50,7 +50,7 @@ def update(program_id):
 
 @programs_bp.delete("/<int:program_id>")
 @jwt_required()
-@admin_required
+@staff_required
 def delete(program_id):
     result, code = delete_program(program_id)
     return jsonify(result), code

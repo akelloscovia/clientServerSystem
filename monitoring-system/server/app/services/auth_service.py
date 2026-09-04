@@ -37,6 +37,23 @@ def register_user(name: str, email: str, password: str) -> tuple[dict, int]:
     return {"message": "Registration successful.", "user": user.to_dict(), **tokens}, 201
 
 
+def create_staff_user(name: str, email: str, password: str, role: str,
+                      actor_id: int) -> tuple[dict, int]:
+    """Admin-only: create an account with an explicit role (no tokens issued)."""
+    if role not in ("user", "secretary", "admin"):
+        return {"error": "Invalid role. Must be user, secretary, or admin."}, 400
+    if User.query.filter_by(email=email.lower()).first():
+        return {"error": "Email already registered."}, 409
+
+    pw_hash = bcrypt.generate_password_hash(password).decode("utf-8")
+    user = User(name=name, email=email.lower(), password_hash=pw_hash, role=role)
+    db.session.add(user)
+    db.session.flush()
+    _audit(actor_id, "CREATE_STAFF", "user", user.id, f"{email} as {role}")
+    db.session.commit()
+    return {"message": f"Account created for {email}.", "user": user.to_dict()}, 201
+
+
 def login_user(email: str, password: str) -> tuple[dict, int]:
     """Authenticate user. Returns (response_dict, http_status)."""
     user = User.query.filter_by(email=email.lower()).first()

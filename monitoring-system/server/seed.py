@@ -61,15 +61,29 @@ with app.app_context():
             ))
     db.session.commit()
 
-    # Sample TV channel — replace/add real ones from the Channels page in the dashboard.
-    if not Channel.query.first():
-        db.session.add(Channel(
-            name="Sample Test Stream",
-            stream_url="https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8",
-            stream_type="hls",
-            sort_order=0,
-        ))
-        print("✓ Sample TV channel added (replace with a real channel from the dashboard)")
+    # Real Uganda broadcaster channels — their own official live pages/players.
+    # Add/edit/reorder any of these from the Channels page in the dashboard.
+    BROADCAST_CHANNELS = [
+        ("NTV Uganda", "https://ntv.co.ug/live-tv", "other", 1),
+        ("NBS TV",     "https://www.nbs.ug/live", "other", 2),
+        ("Spark TV",   "https://ntv.co.ug/spark-live-tv-2", "other", 3),
+        ("UBC TV",     "https://www.youtube.com/channel/UCehjvG_d36rOJj81HBcWV0A/live", "youtube", 4),
+        ("Bukedde TV", "https://www.newvision.co.ug/tv/4", "other", 5),
+        ("TV West",    "https://www.bukedde.co.ug/tv/6", "other", 6),
+    ]
+    for name, stream_url, stream_type, sort_order in BROADCAST_CHANNELS:
+        if not Channel.query.filter_by(name=name).first():
+            db.session.add(Channel(
+                name=name, stream_url=stream_url,
+                stream_type=stream_type, sort_order=sort_order,
+            ))
+            print(f"✓ Channel added: {name}")
+
+    # Drop the old placeholder stream now that real channels are seeded.
+    placeholder = Channel.query.filter_by(name="Sample Test Stream").first()
+    if placeholder:
+        db.session.delete(placeholder)
+        print("✓ Removed placeholder Sample Test Stream")
 
     # Sample daily programs — edit/replace from the Programs page in the dashboard.
     if not Program.query.first():

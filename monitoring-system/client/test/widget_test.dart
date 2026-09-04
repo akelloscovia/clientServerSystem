@@ -1,30 +1,49 @@
-// Basic smoke test: the app boots to the reception kiosk screen when no
-// user session is stored, without throwing during the first frame.
+// Basic smoke tests: the app boots into the unified MainShell when no user
+// session is stored, and the nav lets you move between the four sections
+// without throwing during the first frame.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:monitoring_client/main.dart';
 
 void main() {
-  testWidgets('App boots to the kiosk screen when logged out',
+  testWidgets('App boots into the main shell when logged out',
       (WidgetTester tester) async {
     await tester.pumpWidget(const MonitoringClientApp(isLoggedIn: false));
     await tester.pump();
 
-    expect(find.text('Ministry Reception'), findsOneWidget);
+    // Every nav destination is present.
+    expect(find.text('Home'), findsWidgets);
+    expect(find.text('Programs'), findsWidgets);
+    expect(find.text('TV'), findsWidgets);
+    expect(find.text('Visitor Sign-In'), findsWidgets);
+    expect(find.text('Admin Portal'), findsWidgets);
+    expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Split mode shows programs and TV side by side without overflow',
+  testWidgets('Admin Portal tab shows the staff sign-in form',
       (WidgetTester tester) async {
     await tester.pumpWidget(const MonitoringClientApp(isLoggedIn: false));
     await tester.pump();
 
-    await tester.tap(find.text('◨  Split'));
+    await tester.tap(find.text('Admin Portal').last);
     await tester.pump();
 
+    expect(find.text('SELECT PORTAL'), findsOneWidget);
     expect(tester.takeException(), isNull);
-    expect(find.text('Swap sides'), findsNothing); // tooltip, not a label
-    expect(find.byIcon(Icons.swap_horiz), findsOneWidget);
   });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

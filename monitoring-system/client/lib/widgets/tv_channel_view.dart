@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../models/channel.dart';
 import '../services/kiosk_service.dart';
+import 'web_channel_player.dart';
 
 /// TV channel switcher + player for the reception kiosk.
 /// Direct video streams (HLS/mp4) play via video_player + chewie; YouTube
@@ -26,6 +28,7 @@ class _TvChannelViewState extends State<TvChannelView> {
   VideoPlayerController? _videoController;
   ChewieController? _chewieController;
   WebViewController? _webController;
+  String? _webEmbedUrl; // web build: URL loaded in an <iframe>
   bool _playerLoading = false;
   String? _playerError;
 
@@ -71,6 +74,7 @@ class _TvChannelViewState extends State<TvChannelView> {
     _videoController?.dispose();
     _videoController = null;
     _webController = null;
+    _webEmbedUrl = null;
   }
 
   Future<void> _selectChannel(Channel channel) async {
@@ -82,6 +86,16 @@ class _TvChannelViewState extends State<TvChannelView> {
     });
 
     if (channel.playsInWebView) {
+      if (kIsWeb) {
+        // webview_flutter has no web build — load the channel in an
+        // <iframe> instead (see _buildPlayer / web_channel_player.dart).
+        if (!mounted) return;
+        setState(() {
+          _webEmbedUrl = channel.embedUrl;
+          _playerLoading = false;
+        });
+        return;
+      }
       final controller = WebViewController()
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
         ..loadRequest(Uri.parse(channel.streamUrl));
@@ -204,6 +218,40 @@ class _TvChannelViewState extends State<TvChannelView> {
     }
     if (_webController != null) {
       return WebViewWidget(controller: _webController!);
+    }
+    if (_webEmbedUrl != null) {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          buildEmbeddedChannel(_webEmbedUrl!),
+          Positioned(
+            right: 8,
+            top: 8,
+            child: Material(
+              color: Colors.black54,
+              borderRadius: BorderRadius.circular(8),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () => openChannelExternally(
+                    _selected?.streamUrl ?? _webEmbedUrl!),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.open_in_new, size: 14, color: Colors.white),
+                      SizedBox(width: 6),
+                      Text('Open channel',
+                          style:
+                              TextStyle(color: Colors.white, fontSize: 12)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
     }
     if (_chewieController != null) {
       return Chewie(controller: _chewieController!);

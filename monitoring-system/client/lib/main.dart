@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'screens/home_screen.dart';
-import 'screens/staff_dashboard_screen.dart';
-import 'screens/kiosk_home_screen.dart';
+import 'screens/main_shell.dart';
 import 'services/auth_service.dart';
 
 void main() async {
@@ -51,11 +50,12 @@ class MonitoringClientApp extends StatelessWidget {
           centerTitle: false,
         ),
       ),
-      home: !isLoggedIn
-          ? const KioskHomeScreen()
-          : AuthService().currentUser?.role == 'user'
-              ? const HomeScreen()
-              : const StaffDashboardScreen(),
+      // One shell for everything public-facing (Programs / TV / Visitor
+      // Sign-In / Admin Portal). Only a signed-in client goes straight to
+      // their own case list.
+      home: isLoggedIn && AuthService().currentUser?.role == 'user'
+          ? const HomeScreen()
+          : const MainShell(),
     );
   }
 }
