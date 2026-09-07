@@ -3,6 +3,22 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import './Login.css'
 
+/** Pull the most useful message out of an axios error / thrown Error. */
+function extractError(err) {
+  const res = err.response
+  if (res?.data?.error) return res.data.error
+  if (res?.data?.errors) {
+    const flat = Object.values(res.data.errors).flat()
+    if (flat.length) return flat.join(' ')
+  }
+  if (res?.status === 423) return 'Account locked after too many failed attempts. Try again later.'
+  if (res?.status === 429) return 'Too many attempts. Please wait a minute and try again.'
+  // Errors thrown by AuthContext (e.g. role denied) carry a plain message;
+  // axios's own "Request failed with status code N" is not useful, so skip it.
+  if (err.message && !/request failed with status code/i.test(err.message)) return err.message
+  return 'Login failed. Please try again.'
+}
+
 export default function Login() {
   const [email, setEmail]     = useState('')
   const [password, setPassword] = useState('')
@@ -19,7 +35,7 @@ export default function Login() {
       await login(email, password)
       navigate('/dashboard')
     } catch (err) {
-      setError(err.message || err.response?.data?.error || 'Login failed. Please try again.')
+      setError(extractError(err))
     } finally {
       setLoading(false)
     }
