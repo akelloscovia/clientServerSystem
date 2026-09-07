@@ -96,6 +96,7 @@ class _UserManagerState extends State<UserManager> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'fab_user_manager',
         onPressed: _addStaff,
         backgroundColor: Dash.primary,
         icon: const Icon(Icons.person_add, color: Colors.white),

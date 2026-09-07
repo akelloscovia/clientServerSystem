@@ -276,6 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: isClient
           ? FloatingActionButton.extended(
+              heroTag: 'fab_home_new_submission',
               onPressed: () async {
                 await Navigator.push(
                     context,

@@ -99,6 +99,7 @@ class _ChannelManagerState extends State<ChannelManager> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'fab_channel_manager',
         onPressed: () => _openEditor(),
         backgroundColor: Dash.primary,
         icon: const Icon(Icons.add, color: Colors.white),
