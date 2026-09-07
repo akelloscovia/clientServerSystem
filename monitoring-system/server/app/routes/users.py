@@ -78,11 +78,30 @@ def toggle_active(user_id):
     if user.id == int(get_jwt_identity()):
         return jsonify({"error": "You cannot deactivate your own account."}), 409
     user.is_active = not user.is_active
+    if user.is_active:
+        # Re-enabling an account also clears any brute-force lockout.
+        user.reset_lockout()
     db.session.add(AuditLog(user_id=int(get_jwt_identity()), action="TOGGLE_USER_ACTIVE", entity_type="user",
                             entity_id=user.id, details=f"is_active={user.is_active}"))
     db.session.commit()
     state = "activated" if user.is_active else "deactivated"
     return jsonify({"message": f"User {state}.", "user": user.to_dict()}), 200
+
+
+@users_bp.post("/<int:user_id>/unlock")
+@jwt_required()
+@admin_required
+def unlock_user(user_id):
+    """Clear a brute-force lockout on an active account."""
+    user = User.query.get_or_404(user_id)
+    was_locked = user.is_locked() or user.failed_login_attempts
+    user.reset_lockout()
+    db.session.add(AuditLog(user_id=int(get_jwt_identity()), action="UNLOCK_USER",
+                            entity_type="user", entity_id=user.id,
+                            details="Lockout cleared by admin"))
+    db.session.commit()
+    msg = "Account unlocked." if was_locked else "Account was not locked."
+    return jsonify({"message": msg, "user": user.to_dict()}), 200
 
 
 @users_bp.get("/secretaries")

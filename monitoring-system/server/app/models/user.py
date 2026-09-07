@@ -1,8 +1,13 @@
 """
 User model — supports roles: user, admin, secretary.
 """
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from ..extensions import db
+
+
+def _utcnow() -> datetime:
+    """Naive UTC — matches how the DateTime columns round-trip through MariaDB."""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
 class User(db.Model):
@@ -17,6 +22,11 @@ class User(db.Model):
         default="user", nullable=False
     )
     is_active     = db.Column(db.Boolean, default=True, nullable=False)
+
+    # Brute-force lockout state (see app/services/auth_service.login_user).
+    failed_login_attempts = db.Column(db.Integer, default=0, nullable=False)
+    locked_until          = db.Column(db.DateTime, nullable=True)
+
     created_at    = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at    = db.Column(
         db.DateTime,
@@ -35,6 +45,25 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.email} [{self.role}]>"
+
+    # --- Login lockout helpers -------------------------------------------------
+    def is_locked(self) -> bool:
+        return self.locked_until is not None and _utcnow() < self.locked_until
+
+    def lockout_minutes_remaining(self) -> int:
+        if not self.is_locked():
+            return 0
+        return max(1, int((self.locked_until - _utcnow()).total_seconds() // 60) + 1)
+
+    def record_failed_login(self, max_attempts: int, lockout_minutes: int) -> None:
+        """Count a failed attempt and lock the account once the limit is hit."""
+        self.failed_login_attempts = (self.failed_login_attempts or 0) + 1
+        if self.failed_login_attempts >= max_attempts:
+            self.locked_until = _utcnow() + timedelta(minutes=lockout_minutes)
+
+    def reset_lockout(self) -> None:
+        self.failed_login_attempts = 0
+        self.locked_until = None
 
     def to_dict(self):
         return {

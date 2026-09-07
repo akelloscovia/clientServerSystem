@@ -5,8 +5,9 @@ from flask import Flask
 from flask import jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_cors import CORS
-from .config import config_map
-from .extensions import db, migrate, jwt, bcrypt
+from werkzeug.middleware.proxy_fix import ProxyFix
+from .config import config_map, validate_production_config
+from .extensions import db, migrate, jwt, bcrypt, limiter
 from .routes.auth import auth_bp
 from .routes.submissions import submissions_bp
 from .routes.responses import responses_bp
@@ -27,7 +28,15 @@ def create_app(config_name: str = None) -> Flask:
 
     # Load config
     env = config_name or os.getenv("FLASK_ENV", "development")
-    app.config.from_object(config_map[env])
+    config_class = config_map[env]
+    app.config.from_object(config_class)
+    if env == "production":
+        validate_production_config(config_class)
+
+    # Honour X-Forwarded-* only when explicitly trusted (behind a known proxy);
+    # otherwise clients could spoof their IP and bypass rate limiting / lockout.
+    if app.config.get("TRUST_PROXY"):
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
     # CORS
     CORS(app, origins=app.config.get("CORS_ORIGINS", "*").split(","),
@@ -38,6 +47,7 @@ def create_app(config_name: str = None) -> Flask:
     migrate.init_app(app, db)
     jwt.init_app(app)
     bcrypt.init_app(app)
+    limiter.init_app(app)
 
     # Register blueprints
     app.register_blueprint(auth_bp,        url_prefix="/api/auth")
@@ -97,6 +107,14 @@ def create_app(config_name: str = None) -> Flask:
     @app.errorhandler(422)
     def unprocessable(_error):
         return jsonify({"error": "The request could not be processed."}), 422
+
+    @app.errorhandler(429)
+    def too_many_requests(error):
+        retry_after = getattr(error, "description", None)
+        return jsonify({
+            "error": "Too many requests. Please slow down and try again shortly.",
+            "detail": str(retry_after) if retry_after else None,
+        }), 429
 
     # Import models so Flask-Migrate can detect them
     with app.app_context():
