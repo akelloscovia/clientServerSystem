@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/user.dart';
 import '../../services/submission_service.dart';
+import '../../utils/validators.dart';
 import 'dash_ui.dart';
 
 /// Admin: list accounts, change roles, activate / deactivate, and create
@@ -282,8 +283,7 @@ class _AddStaffDialogState extends State<_AddStaffDialog> {
                 style: const TextStyle(color: Dash.ink),
                 keyboardType: TextInputType.emailAddress,
                 decoration: Dash.input('Email'),
-                validator: (v) =>
-                    (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+                validator: Validators.validateEmail,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -291,12 +291,7 @@ class _AddStaffDialogState extends State<_AddStaffDialog> {
                 style: const TextStyle(color: Dash.ink),
                 obscureText: true,
                 decoration: Dash.input('Temporary password'),
-                validator: (v) {
-                  if (v == null || v.length < 8) return 'At least 8 characters';
-                  if (!v.contains(RegExp(r'[A-Z]'))) return 'Needs an uppercase letter';
-                  if (!v.contains(RegExp(r'[0-9]'))) return 'Needs a digit';
-                  return null;
-                },
+                validator: Validators.validatePassword,
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
