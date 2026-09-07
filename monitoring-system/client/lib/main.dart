@@ -32,7 +32,7 @@ class MonitoringClientApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MonitorSys Client',
+      title: 'Ministry of Planning and Investment',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,

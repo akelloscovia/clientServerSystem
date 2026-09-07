@@ -21,7 +21,7 @@ class AppConstants {
   static String get visitorFormUrl => '$webPortalBaseUrl/visitor-form';
 
   // Kiosk branding
-  static const String orgName = 'Ministry of Finance';
+  static const String orgName = 'Ministry of Planning and Investment';
   static const String orgTag = 'MINISTRY';
 
   // Storage keys

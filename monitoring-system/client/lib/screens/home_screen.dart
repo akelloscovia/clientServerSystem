@@ -103,11 +103,14 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Icon(Icons.bolt, size: 18, color: Colors.white),
             ),
             const SizedBox(width: 10),
-            const Text('MonitorSys',
-                style: TextStyle(
-                    color: Color(0xFFF1F5F9),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700)),
+            const Flexible(
+              child: Text('Ministry of Planning and Investment',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      color: Color(0xFFF1F5F9),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700)),
+            ),
           ],
         ),
         actions: [

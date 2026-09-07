@@ -128,11 +128,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
                 const Text(
-                  'MonitorSys',
+                  'Ministry of Planning and Investment',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xFFF1F5F9),
-                    fontSize: 28,
+                    fontSize: 22,
                     fontWeight: FontWeight.w800,
+                    height: 1.2,
                   ),
                 ),
                 const SizedBox(height: 4),

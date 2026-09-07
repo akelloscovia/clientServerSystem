@@ -29,7 +29,7 @@ export default function Sidebar() {
       <div className="sidebar-logo">
         <div className="logo-icon">⚡</div>
         <div>
-          <div className="logo-name">MonitorSys</div>
+          <div className="logo-name">Ministry of Planning and Investment</div>
           <div className="logo-sub">Control Panel</div>
         </div>
       </div>

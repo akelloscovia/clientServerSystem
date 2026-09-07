@@ -35,8 +35,8 @@ export default function Login() {
         {/* Logo */}
         <div className="login-logo">
           <div className="login-logo-icon">⚡</div>
-          <h1 className="login-title">MonitorSys</h1>
-          <p className="login-subtitle">Admin & Secretary Portal</p>
+          <h1 className="login-title">Ministry of Planning and Investment</h1>
+          <p className="login-subtitle">Admin &amp; Secretary Portal</p>
         </div>
 
         {error && (
