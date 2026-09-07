@@ -29,9 +29,9 @@ export default function UserSubmissions() {
   const loadUserSubmissions = async (userToken) => {
     setLoading(true)
     try {
-      const response = await api.get('/api/submissions/user', {
+      const response = await api.get('/submissions/user', {
         headers: {
-          'X-User-Token': userToken
+          Authorization: `Bearer ${userToken}`
         }
       })
       setSubmissions(response.data.submissions || [])

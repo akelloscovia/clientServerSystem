@@ -40,7 +40,7 @@ export default function UserPortal() {
 
     setLoading(true)
     try {
-      const response = await api.post('/api/auth/user-portal', { email: userEmail })
+      const response = await api.post('/auth/user-portal', { email: userEmail })
       
       // Generate QR code for this email
       const qrContent = `${window.location.origin}/user-access?token=${response.data.token}`
