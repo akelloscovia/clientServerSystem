@@ -101,10 +101,22 @@ class ApiService {
   /// Throw a readable error if status code is not 2xx.
   static void checkError(http.Response resp) {
     if (resp.statusCode >= 200 && resp.statusCode < 300) return;
-    final body = jsonDecode(resp.body) as Map<String, dynamic>;
-    final msg = body['error'] ??
-        body['message'] ??
-        'Request failed (${resp.statusCode})';
-    throw Exception(msg.toString());
+    Object? msg;
+    try {
+      final body = jsonDecode(resp.body) as Map<String, dynamic>;
+      msg = body['error'] ?? body['message'];
+      if (msg == null && body['errors'] is Map) {
+        msg = (body['errors'] as Map)
+            .values
+            .expand((v) => v is List ? v : [v])
+            .join(' ');
+      }
+    } catch (_) {
+      // non-JSON body (e.g. an upstream 502) — fall through to a generic message
+    }
+    if (resp.statusCode == 429) {
+      msg ??= 'Too many attempts. Please wait a moment and try again.';
+    }
+    throw Exception((msg ?? 'Request failed (${resp.statusCode})').toString());
   }
 }
