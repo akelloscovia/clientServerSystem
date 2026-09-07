@@ -1,0 +1,250 @@
+// Schema introspected from the existing MySQL database (`prisma db pull`),
+// then hand-tuned: relation fields renamed for readability and Prisma-level
+// @default / @updatedAt added so inserts match what the old SQLAlchemy models
+// filled in (the DB columns themselves carry no defaults).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id            Int        @id @default(autoincrement())
+  name          String     @db.VarChar(120)
+  email         String     @unique(map: "ix_users_email") @db.VarChar(180)
+  password_hash String     @db.VarChar(256)
+  role          users_role @default(user)
+  is_active     Boolean    @default(true)
+  created_at    DateTime?  @default(now()) @db.DateTime(0)
+  updated_at    DateTime?  @updatedAt @db.DateTime(0)
+
+  submissions            submissions[]
+  responses              responses[]
+  notifications          notifications[]
+  audit_logs             audit_logs[]
+  status_changes         submission_status_history[]
+  assignments_received   assignments[]              @relation("assignmentAssignee")
+  assignments_made       assignments[]              @relation("assignmentAssigner")
+  visitors_assigned      visitor_logs[]             @relation("visitorAssignee")
+  visitors_assigned_by   visitor_logs[]             @relation("visitorAssigner")
+  visitor_replies        visitor_replies[]
+}
+
+model submissions {
+  id          Int                  @id @default(autoincrement())
+  user_id     Int
+  title       String               @db.VarChar(200)
+  description String               @db.Text
+  category    submissions_category @default(other)
+  priority    submissions_priority @default(medium)
+  status      submissions_status   @default(pending)
+  created_at  DateTime?            @default(now()) @db.DateTime(0)
+  updated_at  DateTime?            @updatedAt @db.DateTime(0)
+
+  submitter      users                       @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "submissions_ibfk_1")
+  assignment     assignments?
+  notifications  notifications[]
+  responses      responses[]
+  status_history submission_status_history[]
+
+  @@index([created_at], map: "ix_submissions_created_at")
+  @@index([user_id], map: "ix_submissions_user_id")
+}
+
+model responses {
+  id            Int         @id @default(autoincrement())
+  submission_id Int
+  responder_id  Int
+  message       String      @db.Text
+  created_at    DateTime?   @default(now()) @db.DateTime(0)
+
+  submission submissions @relation(fields: [submission_id], references: [id], onUpdate: Restrict, map: "responses_ibfk_1")
+  responder  users       @relation(fields: [responder_id], references: [id], onUpdate: Restrict, map: "responses_ibfk_2")
+
+  @@index([submission_id], map: "ix_responses_submission_id")
+  @@index([responder_id], map: "responder_id")
+}
+
+model assignments {
+  id            Int       @id @default(autoincrement())
+  submission_id Int       @unique(map: "submission_id")
+  assigned_to   Int
+  assigned_by   Int
+  notes         String?   @db.Text
+  assigned_at   DateTime? @default(now()) @db.DateTime(0)
+
+  submission submissions @relation(fields: [submission_id], references: [id], onUpdate: Restrict, map: "assignments_ibfk_1")
+  secretary  users       @relation("assignmentAssignee", fields: [assigned_to], references: [id], onUpdate: Restrict, map: "assignments_ibfk_2")
+  admin      users       @relation("assignmentAssigner", fields: [assigned_by], references: [id], onUpdate: Restrict, map: "assignments_ibfk_3")
+
+  @@index([assigned_by], map: "assigned_by")
+  @@index([assigned_to], map: "assigned_to")
+}
+
+model audit_logs {
+  id          Int       @id @default(autoincrement())
+  user_id     Int?
+  action      String    @db.VarChar(100)
+  entity_type String?   @db.VarChar(50)
+  entity_id   Int?
+  details     String?   @db.Text
+  ip_address  String?   @db.VarChar(45)
+  timestamp   DateTime? @default(now()) @db.DateTime(0)
+
+  actor users? @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "audit_logs_ibfk_1")
+
+  @@index([timestamp], map: "ix_audit_logs_timestamp")
+  @@index([user_id], map: "user_id")
+}
+
+model notifications {
+  id            Int       @id @default(autoincrement())
+  user_id       Int
+  submission_id Int?
+  message       String    @db.VarChar(500)
+  is_read       Boolean   @default(false)
+  created_at    DateTime? @default(now()) @db.DateTime(0)
+
+  user       users        @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "notifications_ibfk_1")
+  submission submissions? @relation(fields: [submission_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "notifications_ibfk_2")
+
+  @@index([user_id], map: "ix_notifications_user_id")
+  @@index([submission_id], map: "submission_id")
+}
+
+model submission_status_history {
+  id            Int       @id @default(autoincrement())
+  submission_id Int
+  changed_by    Int?
+  from_status   String?   @db.VarChar(30)
+  to_status     String    @db.VarChar(30)
+  changed_at    DateTime  @default(now()) @db.DateTime(0)
+
+  submission submissions @relation(fields: [submission_id], references: [id], onUpdate: Restrict, map: "submission_status_history_ibfk_1")
+  actor      users?      @relation(fields: [changed_by], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "submission_status_history_ibfk_2")
+
+  @@index([changed_by], map: "changed_by")
+  @@index([changed_at], map: "ix_submission_status_history_changed_at")
+  @@index([submission_id], map: "ix_submission_status_history_submission_id")
+}
+
+model programs {
+  id          Int          @id @default(autoincrement())
+  title       String       @db.VarChar(200)
+  description String?      @db.Text
+  day         programs_day @default(daily)
+  start_time  DateTime     @db.Time(0)
+  end_time    DateTime     @db.Time(0)
+  location    String?      @db.VarChar(200)
+  is_active   Boolean      @default(true)
+  created_at  DateTime?    @default(now()) @db.DateTime(0)
+  updated_at  DateTime?    @updatedAt @db.DateTime(0)
+}
+
+model channels {
+  id          Int                  @id @default(autoincrement())
+  name        String               @db.VarChar(100)
+  stream_url  String               @db.VarChar(500)
+  logo_url    String?              @db.VarChar(500)
+  stream_type channels_stream_type @default(hls)
+  sort_order  Int                  @default(0)
+  is_active   Boolean              @default(true)
+  created_at  DateTime?            @default(now()) @db.DateTime(0)
+  updated_at  DateTime?            @updatedAt @db.DateTime(0)
+}
+
+model visitor_logs {
+  id               Int                 @id @default(autoincrement())
+  name             String              @db.VarChar(150)
+  company          String?             @db.VarChar(150)
+  visit_date       DateTime            @db.Date
+  time_in          DateTime            @db.Time(0)
+  reason_for_visit String              @db.VarChar(300)
+  description      String?             @db.Text
+  status           visitor_logs_status @default(pending)
+  assigned_to      Int?
+  assigned_by      Int?
+  assigned_at      DateTime?           @db.DateTime(0)
+  created_at       DateTime?           @default(now()) @db.DateTime(0)
+  updated_at       DateTime?           @updatedAt @db.DateTime(0)
+
+  replies       visitor_replies[]
+  assigned_user users?            @relation("visitorAssignee", fields: [assigned_to], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "visitor_logs_ibfk_1")
+  assigner_user users?            @relation("visitorAssigner", fields: [assigned_by], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "visitor_logs_ibfk_2")
+
+  @@index([assigned_by], map: "assigned_by")
+  @@index([assigned_to], map: "assigned_to")
+  @@index([created_at], map: "ix_visitor_logs_created_at")
+}
+
+model visitor_replies {
+  id           Int       @id @default(autoincrement())
+  visitor_id   Int
+  responder_id Int
+  message      String    @db.Text
+  created_at   DateTime? @default(now()) @db.DateTime(0)
+
+  visitor   visitor_logs @relation(fields: [visitor_id], references: [id], onUpdate: Restrict, map: "visitor_replies_ibfk_1")
+  responder users        @relation(fields: [responder_id], references: [id], onUpdate: Restrict, map: "visitor_replies_ibfk_2")
+
+  @@index([visitor_id], map: "ix_visitor_replies_visitor_id")
+  @@index([responder_id], map: "responder_id")
+}
+
+enum programs_day {
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+  saturday
+  sunday
+  daily
+}
+
+enum channels_stream_type {
+  hls
+  youtube
+  mp4
+  other
+}
+
+enum submissions_category {
+  complaint
+  inquiry
+  report
+  request
+  other
+}
+
+enum users_role {
+  user
+  admin
+  secretary
+}
+
+enum submissions_priority {
+  low
+  medium
+  high
+  urgent
+}
+
+enum submissions_status {
+  pending
+  under_review
+  assigned
+  resolved
+  closed
+}
+
+enum visitor_logs_status {
+  pending
+  assigned
+  attended
+  closed
+}

@@ -1,6 +1,7 @@
 # Database Design & Schema
 
-The system uses **PostgreSQL** with SQLAlchemy ORM and Alembic migrations.
+The system uses **MySQL / MariaDB**, accessed through the Prisma ORM
+(`server/prisma/schema.prisma`, introspected from the database).
 
 ---
 

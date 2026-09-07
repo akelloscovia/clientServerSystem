@@ -3,64 +3,64 @@
 A full-stack case/submission monitoring system with three tiers:
 
 ```
-USER (Flutter App)  →  Flask REST API  →  PostgreSQL
-                              ↑
-                    Admin / Secretary Dashboard (React)
+USER (Flutter App)  →  Node.js REST API (Express + Prisma)  →  MySQL / MariaDB
+                                   ↑
+                     Admin / Secretary Dashboard (React + Vite)
 ```
+
+The API and the dashboard are both JavaScript; the mobile/web client is Flutter.
 
 ## Components
 
 | Component | Path | Technology |
 |-----------|------|-----------|
-| Mobile Client | `client/` | Flutter (Dart) |
-| REST API | `server/` | Python Flask + PostgreSQL |
-| Monitoring Dashboard | `monitoring/` | React + Vite |
+| Client | `client/` | Flutter (Dart) |
+| REST API | `server/` | Node.js, Express, Prisma, MySQL |
+| Dashboard | `dashboard/` | React + Vite |
 
 ## Quick Start
 
-### 1. Server (Flask API)
+### 1. Server (Node API)
 
 ```bash
 cd server
-python -m venv venv
-venv\Scripts\activate       # Windows
-pip install -r requirements.txt
-# Edit .env with your database URL
-flask db init
-flask db migrate -m "initial"
-flask db upgrade
-python run.py
+npm install
+npx prisma generate          # generate the Prisma client
+# Edit .env — DATABASE_URL points at your MySQL/MariaDB instance
+npm run seed                  # create the default accounts + sample data
+npm run dev                   # or: npm start
 ```
 
-Server starts at: **http://localhost:5000**
+Server starts at **http://localhost:5000**. See [server/README.md](server/README.md)
+for details.
 
-### 2. Monitoring Dashboard (React)
+### 2. Dashboard (React)
 
 ```bash
-cd monitoring
+cd dashboard
 npm install
 npm run dev
 ```
 
-Dashboard starts at: **http://localhost:5173**
+Dashboard starts at **http://localhost:5173** (proxies `/api` to the server).
 
 ### 3. Flutter Client
 
 ```bash
 cd client
 flutter pub get
-flutter run
+flutter run                   # or: flutter run -d chrome --no-web-resources-cdn
 ```
 
-## Default Admin Account
+## Default Accounts
 
-After running migrations, seed an admin:
-```bash
-cd server
-python seed.py
-```
-- Email: `admin@system.com`
-- Password: `Admin@123`
+`npm run seed` in `server/` creates:
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | `admin@system.com` | `Admin@123` |
+| Secretary | `secretary@system.com` | `Secretary@123` |
+| User | `user@example.com` | `User@1234` |
 
 ## Documentation
 

@@ -3,14 +3,13 @@
 ## 🚀 Get Started in 5 Minutes
 
 ### Prerequisites
-- Node.js 16+
-- Python 3.8+
-- PostgreSQL (already running)
+- Node.js 18+
+- MySQL / MariaDB (already running)
 
 ### Step 1: Install Frontend Dependencies
 
 ```bash
-cd monitoring-system/monitoring
+cd monitoring-system/dashboard
 npm install
 ```
 
@@ -182,7 +181,7 @@ Pages/
 
 ### Frontend Build
 ```bash
-cd monitoring
+cd dashboard
 npm run build
 ```
 
@@ -191,38 +190,39 @@ Output: `dist/` folder (ready to deploy)
 ### Backend Deployment
 ```bash
 cd server
-pip install -r requirements.txt
-python run.py
+npm install --omit=dev
+npx prisma generate
+npm start
 ```
 
 Set environment variables:
 ```
-FLASK_ENV=production
-DATABASE_URL=postgresql://...
-SECRET_KEY=your-secret-key
+NODE_ENV=production
+DATABASE_URL=mysql://user:pass@host:3306/monitoring_system
+JWT_SECRET=your-secret-key
 ```
 
 ---
 
 ## 📝 Configuration Files Updated
 
-### `monitoring/package.json`
+### `dashboard/package.json`
 Added dependencies:
 - qrcode.react
 - html5-qrcode
 - jsqr
 
-### `monitoring/src/App.jsx`
+### `dashboard/src/App.jsx`
 Added routes:
 - `/user-portal` - User portal
 - `/user-submissions` - User's submissions
 
-### `server/app/routes/auth.py`
-Added endpoint:
+### `server/src/routes/auth.js`
+Endpoint:
 - `POST /api/auth/user-portal`
 
-### `server/app/routes/submissions.py`
-Added endpoint:
+### `server/src/routes/submissions.js`
+Endpoint:
 - `GET /api/submissions/user`
 
 ---

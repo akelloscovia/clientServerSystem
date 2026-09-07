@@ -16,19 +16,19 @@
                                 │ HTTPS / JSON (JWT Auth)
                                 ▼
               ┌─────────────────────────────────────┐
-              │           Flask REST API            │
+              │     Node.js REST API (Express)      │
               ├─────────────────────────────────────┤
               │ • JWT Authentication & Token Store  │
               │ • Role-Based Permissions (RBAC)     │
-              │ • Marshmallow Schema Validation     │
+              │ • zod Schema Validation             │
               │ • Business Logic & Orchestration    │
               │ • Audit Trail & Event Logging       │
               └─────────────────┬───────────────────┘
                                 │
-                                │ SQLAlchemy ORM
+                                │ Prisma ORM
                                 ▼
               ┌─────────────────────────────────────┐
-              │         PostgreSQL Database         │
+              │       MySQL / MariaDB Database      │
               ├─────────────────────────────────────┤
               │ • Users (Roles: user, sec, admin)   │
               │ • Submissions (Status, Priority)    │
@@ -62,7 +62,7 @@
 1. **User Authentication**: The user opens the Flutter application, registers or logs in, and acquires an access token stored securely via `SharedPreferences`.
 2. **Form Entry & Validation**: The user enters case title, detailed description, category, and priority level. The client performs initial client-side regex/length validation.
 3. **Dispatch**: The Flutter client issues a `POST /api/submissions` request with the JSON payload and Bearer token.
-4. **Processing & Persistence**: The Flask API validates the payload with `SubmissionCreateSchema`, stores the submission in PostgreSQL, generates audit logs, and triggers notification alerts for system administrators.
+4. **Processing & Persistence**: The Node API validates the payload with the `submissionCreateSchema` zod schema, stores the submission in MySQL via Prisma, generates audit logs, and triggers notification alerts for system administrators.
 5. **Real-time Status Tracking**: The user can check the 5-phase status tracker in Flutter (`pending` → `under_review` → `assigned` → `resolved` → `closed`).
 
 ### 2. Admin Oversight & Delegation Cycle
