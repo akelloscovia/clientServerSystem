@@ -20,7 +20,7 @@ npm install
 cp .env.example .env        # then edit DATABASE_URL etc. (or edit .env directly)
 npx prisma generate         # generate the Prisma client from prisma/schema.prisma
 npm run seed                # default accounts + sample kiosk data (idempotent)
-npm run dev                 # http://localhost:5000  (npm start for no-watch)
+npm run dev                 # http://localhost:5000  (nodemon auto-reload; npm start for no-watch)
 ```
 
 ### Environment (`.env`)

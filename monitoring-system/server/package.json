@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Monitoring system REST API (Express + Prisma + MySQL)",
   "scripts": {
-    "dev": "node --watch src/index.js",
+    "dev": "nodemon src/index.js",
     "start": "node src/index.js",
     "seed": "node seed.js",
     "prisma:pull": "prisma db pull",
@@ -21,6 +21,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "nodemon": "^3.1.14",
     "prisma": "^5.22.0"
   }
 }
