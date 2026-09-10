@@ -11,17 +11,20 @@ ROOT="/var/www/MinisterReceptionSystem/clientServerSystem"
 APP="$ROOT/monitoring-system"
 
 echo "==> git pull"
+# npm rewrites package-lock.json on install; discard that so --ff-only never trips
+git -C "$ROOT" checkout -- monitoring-system/server/package-lock.json \
+                            monitoring-system/dashboard/package-lock.json 2>/dev/null || true
 git -C "$ROOT" pull --ff-only origin master
 
 echo "==> server: install + prisma generate + restart"
 cd "$APP/server"
-npm install --no-audit --no-fund
+npm ci --no-audit --no-fund
 npx prisma generate
 pm2 restart minister-reception-api --update-env
 
 echo "==> dashboard: install + build"
 cd "$APP/dashboard"
-npm install --no-audit --no-fund
+npm ci --no-audit --no-fund
 npm run build
 
 echo "==> done"
