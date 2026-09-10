@@ -17,7 +17,7 @@ class _NewsTickerState extends State<NewsTicker>
 
   static const _style = TextStyle(
     color: Color(0xFFcbd5e1),
-    fontSize: 13,
+    fontSize: 17,
     fontWeight: FontWeight.w600,
   );
   static const _gap = '     •     ';
@@ -49,7 +49,7 @@ class _NewsTickerState extends State<NewsTicker>
     final segment = widget.items.join(_gap) + _gap;
 
     return Container(
-      height: 40,
+      height: 48,
       color: const Color(0xFF0d1117),
       child: Row(
         children: [
@@ -62,7 +62,7 @@ class _NewsTickerState extends State<NewsTicker>
               'LATEST',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 12,
+                fontSize: 15,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.5,
               ),
