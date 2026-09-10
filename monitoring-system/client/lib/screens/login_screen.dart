@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../utils/validators.dart';
 import '../widgets/form_field.dart';
+import '../widgets/ministry_logo.dart';
 import '../widgets/submit_button.dart';
 import 'main_shell.dart';
 
@@ -106,25 +107,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       children: [
                 // Logo
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF3b82f6), Color(0xFF8b5cf6)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF3b82f6).withOpacity(0.35),
-                        blurRadius: 24,
-                        spreadRadius: 2,
-                      )
-                    ],
-                  ),
-                  child: const Icon(Icons.bolt, size: 36, color: Colors.white),
+                const MinistryLogo(
+                  size: 88,
+                  fallbackColor: Color(0xFF2563EB),
                 ),
                 const SizedBox(height: 20),
                 const Text(

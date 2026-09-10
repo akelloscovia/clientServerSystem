@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../utils/constants.dart';
+import 'ministry_logo.dart';
 
 /// Top branding bar for the reception kiosk: org name on the left, a live
 /// clock and date on the right, on a blue gradient background.
@@ -45,16 +46,8 @@ class _KioskHeaderState extends State<KioskHeader> {
       ),
       child: Row(
         children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.account_balance, size: 20, color: Colors.white),
-          ),
-          const SizedBox(width: 12),
+          const MinistryLogo(size: 44),
+          const SizedBox(width: 14),
           Expanded(
             child: Text(
               AppConstants.orgName.toUpperCase(),
@@ -84,19 +77,19 @@ class _KioskHeaderState extends State<KioskHeader> {
                 DateFormat('h:mm').format(_now),
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 26,
+                  fontSize: 28,
                   fontWeight: FontWeight.w800,
                   height: 1.0,
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 4),
               Text(
                 DateFormat('EEEE, MMMM d, yyyy').format(_now).toUpperCase(),
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.85),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.3,
+                  color: Colors.white.withOpacity(0.95),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.4,
                 ),
               ),
             ],

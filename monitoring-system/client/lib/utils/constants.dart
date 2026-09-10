@@ -4,6 +4,15 @@ import 'package:flutter/foundation.dart';
 class AppConstants {
   static String get baseUrl {
     if (kIsWeb) {
+      // Local `flutter run -d chrome` serves the app from a dev server on a
+      // high port with no nginx in front, so a relative `/api` would 404.
+      // Talk to the API server directly in that case.
+      final uri = Uri.base;
+      final isLocalHost =
+          uri.host == 'localhost' || uri.host == '127.0.0.1';
+      if (isLocalHost && uri.port != 80 && uri.port != 443) {
+        return 'http://localhost:5000/api';
+      }
       // Deployed web build: nginx serves the API at /api on the same
       // origin as the app, so this works regardless of host/IP/domain.
       return '/api';
