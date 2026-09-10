@@ -3,6 +3,7 @@ import 'dotenv/config';
 /** Runtime configuration, mirrors the old app/config.py. */
 export const config = {
   env: process.env.NODE_ENV || 'development',
+  host: process.env.HOST || '127.0.0.1',
   port: parseInt(process.env.PORT || '5000', 10),
   corsOrigins: (process.env.CORS_ORIGINS || '*').split(',').map((s) => s.trim()),
   jwtSecret: process.env.JWT_SECRET || 'jwt-dev-secret',
