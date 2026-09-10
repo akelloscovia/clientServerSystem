@@ -34,7 +34,7 @@ class AppFormField extends StatelessWidget {
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF94a3b8),
+            color: Color(0xFF475569),
             letterSpacing: 0.6,
           ),
         ),
@@ -46,21 +46,21 @@ class AppFormField extends StatelessWidget {
           maxLines: maxLines,
           validator: validator,
           onSaved: onSaved,
-          style: const TextStyle(color: Color(0xFFF1F5F9), fontSize: 14),
+          style: const TextStyle(color: Color(0xFF0F172A), fontSize: 14),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: const TextStyle(color: Color(0xFF64748b)),
             suffixIcon: suffixIcon,
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             filled: true,
-            fillColor: const Color(0xFF1a2235),
+            fillColor: const Color(0xFFF1F5F9),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0x12FFFFFF)),
+              borderSide: const BorderSide(color: Color(0x14000000)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0x12FFFFFF)),
+              borderSide: const BorderSide(color: Color(0x14000000)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
@@ -74,7 +74,7 @@ class AppFormField extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(color: Color(0xFFef4444), width: 2),
             ),
-            errorStyle: const TextStyle(color: Color(0xFFfca5a5)),
+            errorStyle: const TextStyle(color: Color(0xFFDC2626)),
           ),
         ),
       ],

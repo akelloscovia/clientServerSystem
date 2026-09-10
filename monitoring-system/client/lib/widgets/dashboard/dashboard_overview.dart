@@ -257,7 +257,7 @@ class _DashboardOverviewState extends State<DashboardOverview> {
           show: true,
           drawVerticalLine: false,
           getDrawingHorizontalLine: (_) =>
-              const FlLine(color: Color(0x14FFFFFF), strokeWidth: 1),
+              const FlLine(color: Color(0x14000000), strokeWidth: 1),
         ),
         borderData: FlBorderData(show: false),
         barTouchData: BarTouchData(
@@ -341,7 +341,7 @@ class _DashboardOverviewState extends State<DashboardOverview> {
           show: true,
           drawVerticalLine: false,
           getDrawingHorizontalLine: (_) =>
-              const FlLine(color: Color(0x14FFFFFF), strokeWidth: 1),
+              const FlLine(color: Color(0x14000000), strokeWidth: 1),
         ),
         borderData: FlBorderData(show: false),
         lineTouchData: LineTouchData(

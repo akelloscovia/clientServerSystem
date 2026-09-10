@@ -56,26 +56,26 @@ class _SubmissionScreenState extends State<SubmissionScreen> {
         Text(label,
           style: const TextStyle(
             fontSize: 12, fontWeight: FontWeight.w600,
-            color: Color(0xFF94a3b8), letterSpacing: 0.6,
+            color: Color(0xFF475569), letterSpacing: 0.6,
           ),
         ),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
           value: value,
           onChanged: onChange,
-          dropdownColor: const Color(0xFF1a2235),
-          style: const TextStyle(color: Color(0xFFF1F5F9), fontSize: 14),
+          dropdownColor: const Color(0xFFF1F5F9),
+          style: const TextStyle(color: Color(0xFF0F172A), fontSize: 14),
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             filled: true,
-            fillColor: const Color(0xFF1a2235),
+            fillColor: const Color(0xFFF1F5F9),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0x12FFFFFF)),
+              borderSide: const BorderSide(color: Color(0x14000000)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0x12FFFFFF)),
+              borderSide: const BorderSide(color: Color(0x14000000)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
@@ -101,16 +101,16 @@ class _SubmissionScreenState extends State<SubmissionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0a0d14),
+      backgroundColor: const Color(0xFFEEF2F6),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0d1117),
+        backgroundColor: const Color(0xFFFFFFFF),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF94a3b8), size: 18),
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF475569), size: 18),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text('New Submission',
-          style: TextStyle(color: Color(0xFFF1F5F9),
+          style: TextStyle(color: Color(0xFF0F172A),
             fontSize: 18, fontWeight: FontWeight.w700)),
       ),
       body: SingleChildScrollView(
@@ -135,12 +135,12 @@ class _SubmissionScreenState extends State<SubmissionScreen> {
                 ),
                 child: const Row(
                   children: [
-                    Icon(Icons.info_outline, color: Color(0xFF60a5fa), size: 20),
+                    Icon(Icons.info_outline, color: Color(0xFF2563EB), size: 20),
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'Fill in the details below. Our team will review and respond to your case.',
-                        style: TextStyle(color: Color(0xFF93c5fd), fontSize: 13),
+                        style: TextStyle(color: Color(0xFF2563EB), fontSize: 13),
                       ),
                     ),
                   ],
@@ -157,7 +157,7 @@ class _SubmissionScreenState extends State<SubmissionScreen> {
                     border: Border(left: BorderSide(color: const Color(0xFFef4444), width: 4)),
                   ),
                   child: Text(_error!,
-                    style: const TextStyle(color: Color(0xFFfca5a5), fontSize: 13)),
+                    style: const TextStyle(color: Color(0xFFDC2626), fontSize: 13)),
                 ),
                 const SizedBox(height: 16),
               ],
@@ -171,7 +171,7 @@ class _SubmissionScreenState extends State<SubmissionScreen> {
                     border: Border(left: BorderSide(color: const Color(0xFF10b981), width: 4)),
                   ),
                   child: Text(_success!,
-                    style: const TextStyle(color: Color(0xFF6ee7b7), fontSize: 13)),
+                    style: const TextStyle(color: Color(0xFF059669), fontSize: 13)),
                 ),
                 const SizedBox(height: 16),
               ],

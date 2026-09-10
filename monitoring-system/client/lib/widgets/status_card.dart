@@ -46,9 +46,9 @@ class StatusCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF111827),
+          color: const Color(0xFFFFFFFF),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0x12FFFFFF)),
+          border: Border.all(color: const Color(0x14000000)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +59,7 @@ class StatusCard extends StatelessWidget {
                 Expanded(
                   child: Text(submission.title,
                     style: const TextStyle(
-                      color: Color(0xFFF1F5F9),
+                      color: Color(0xFF0F172A),
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
                     ),
@@ -78,7 +78,7 @@ class StatusCard extends StatelessWidget {
             // Description preview
             Text(
               submission.description,
-              style: const TextStyle(color: Color(0xFF94a3b8), fontSize: 13),
+              style: const TextStyle(color: Color(0xFF475569), fontSize: 13),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),

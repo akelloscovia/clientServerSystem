@@ -85,9 +85,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = _authService.currentUser;
     final isClient = user?.role == 'user';
     return Scaffold(
-      backgroundColor: const Color(0xFF0a0d14),
+      backgroundColor: const Color(0xFFEEF2F6),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0d1117),
+        backgroundColor: const Color(0xFFFFFFFF),
         elevation: 0,
         title: Row(
           children: [
@@ -107,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Text('Ministry of Planning and Investment',
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                      color: Color(0xFFF1F5F9),
+                      color: Color(0xFF0F172A),
                       fontSize: 18,
                       fontWeight: FontWeight.w700)),
             ),
@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               IconButton(
                 icon: const Icon(Icons.notifications_outlined,
-                    color: Color(0xFF94a3b8)),
+                    color: Color(0xFF475569)),
                 onPressed: _loadNotifications,
               ),
               if (_unread > 0)
@@ -145,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           IconButton(
-            icon: const Icon(Icons.logout, color: Color(0xFF94a3b8)),
+            icon: const Icon(Icons.logout, color: Color(0xFF475569)),
             onPressed: _logout,
           ),
         ],
@@ -161,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text('Hello, ${user?.name.split(' ').first ?? 'User'} 👋',
                     style: const TextStyle(
-                        color: Color(0xFFF1F5F9),
+                        color: Color(0xFF0F172A),
                         fontSize: 22,
                         fontWeight: FontWeight.w700)),
                 const SizedBox(height: 4),
@@ -196,20 +196,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     decoration: BoxDecoration(
                       color: active
                           ? const Color(0xFF3b82f6).withOpacity(0.2)
-                          : const Color(0xFF1a2235),
+                          : const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(99),
                       border: Border.all(
                         color: active
                             ? const Color(0xFF3b82f6)
-                            : const Color(0x12FFFFFF),
+                            : const Color(0x14000000),
                       ),
                     ),
                     child: Text(
                       _filterLabels[f]!,
                       style: TextStyle(
                         color: active
-                            ? const Color(0xFF60a5fa)
-                            : const Color(0xFF94a3b8),
+                            ? const Color(0xFF2563EB)
+                            : const Color(0xFF475569),
                         fontSize: 13,
                         fontWeight:
                             active ? FontWeight.w600 : FontWeight.normal,
@@ -229,14 +229,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 : _error != null
                     ? Center(
                         child: Text(_error!,
-                            style: const TextStyle(color: Color(0xFFfca5a5))))
+                            style: const TextStyle(color: Color(0xFFDC2626))))
                     : _submissions.isEmpty
                         ? Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Icon(Icons.inbox_outlined,
-                                    size: 64, color: Color(0xFF334155)),
+                                    size: 64, color: Color(0xFFCBD5E1)),
                                 const SizedBox(height: 12),
                                 const Text('No submissions yet.',
                                     style: TextStyle(
@@ -245,14 +245,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const SizedBox(height: 8),
                                 const Text('Tap + to submit a new case.',
                                     style: TextStyle(
-                                        color: Color(0xFF475569),
+                                        color: Color(0xFF94A3B8),
                                         fontSize: 13)),
                               ],
                             ),
                           )
                         : RefreshIndicator(
                             color: const Color(0xFF3b82f6),
-                            backgroundColor: const Color(0xFF111827),
+                            backgroundColor: const Color(0xFFFFFFFF),
                             onRefresh: _load,
                             child: ListView.builder(
                               padding:

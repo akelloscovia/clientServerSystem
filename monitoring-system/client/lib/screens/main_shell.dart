@@ -8,16 +8,16 @@ import '../widgets/kiosk_home_view.dart';
 import '../widgets/news_ticker.dart';
 import '../widgets/programs_view.dart';
 import '../widgets/tv_channel_view.dart';
-import '../widgets/visitor_sign_in_view.dart';
 import 'client_access_screen.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
 import 'staff_dashboard_screen.dart';
 
 /// The single entry point for the whole app. Wraps every public-facing
-/// section — Programs, TV, Visitor Sign-In and the Admin Portal — in one
-/// persistent frame with a navigation rail (wide screens) or bottom bar
-/// (narrow), so the user can move between pages without losing their place.
+/// section — Home, Programs, TV and the Admin Portal — in one persistent
+/// frame with a navigation rail (wide screens) or bottom bar (narrow), so
+/// the user can move between pages without losing their place. Visitors
+/// sign in from their phone by scanning the QR code on the Home screen.
 class MainShell extends StatefulWidget {
   final int initialIndex;
   const MainShell({super.key, this.initialIndex = 0});
@@ -37,23 +37,20 @@ class _MainShellState extends State<MainShell> {
   List<String> _tickerItems = [];
 
   // Tab indices, kept as names so the wiring stays readable.
-  static const _kVisitor = 3;
-  static const _kAdmin = 4;
+  static const _kAdmin = 3;
 
   static const _destinations = <_Destination>[
     _Destination('Home', Icons.home_outlined, Icons.home),
     _Destination('Programs', Icons.event_note_outlined, Icons.event_note),
     _Destination('TV', Icons.live_tv_outlined, Icons.live_tv),
-    _Destination('Visitor Sign-In', Icons.how_to_reg_outlined, Icons.how_to_reg),
     _Destination(
         'Admin Portal', Icons.admin_panel_settings_outlined, Icons.admin_panel_settings),
   ];
 
   late final List<Widget> _pages = [
-    KioskHomeView(onOpenVisitorForm: () => _select(_kVisitor)),
+    const KioskHomeView(),
     const ProgramsView(),
     const TvChannelView(),
-    const VisitorSignInView(),
     const AdminPortalView(),
   ];
 
@@ -155,7 +152,7 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0a0d14),
+      backgroundColor: const Color(0xFFEEF2F6),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -172,7 +169,7 @@ class _MainShellState extends State<MainShell> {
                           children: [
                             _buildRail(),
                             const VerticalDivider(
-                                width: 1, color: Color(0x12FFFFFF)),
+                                width: 1, color: Color(0x14000000)),
                             Expanded(child: pageArea),
                           ],
                         )
@@ -194,17 +191,17 @@ class _MainShellState extends State<MainShell> {
         constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height - 200),
         child: IntrinsicHeight(
           child: NavigationRail(
-            backgroundColor: const Color(0xFF0d1117),
+            backgroundColor: const Color(0xFFFFFFFF),
             selectedIndex: _index,
             onDestinationSelected: _select,
             labelType: NavigationRailLabelType.all,
             groupAlignment: -0.9,
-            selectedIconTheme: const IconThemeData(color: Color(0xFF60a5fa)),
+            selectedIconTheme: const IconThemeData(color: Color(0xFF2563EB)),
             selectedLabelTextStyle: const TextStyle(
-                color: Color(0xFF60a5fa), fontWeight: FontWeight.w700),
-            unselectedIconTheme: const IconThemeData(color: Color(0xFF94a3b8)),
+                color: Color(0xFF2563EB), fontWeight: FontWeight.w700),
+            unselectedIconTheme: const IconThemeData(color: Color(0xFF475569)),
             unselectedLabelTextStyle:
-                const TextStyle(color: Color(0xFF94a3b8)),
+                const TextStyle(color: Color(0xFF475569)),
             destinations: [
               for (final d in _destinations)
                 NavigationRailDestination(
@@ -222,14 +219,14 @@ class _MainShellState extends State<MainShell> {
   Widget _buildBottomBar() {
     return NavigationBarTheme(
       data: NavigationBarThemeData(
-        backgroundColor: const Color(0xFF0d1117),
+        backgroundColor: const Color(0xFFFFFFFF),
         indicatorColor: const Color(0xFF3b82f6).withOpacity(0.2),
         labelTextStyle: WidgetStateProperty.resolveWith((states) => TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: states.contains(WidgetState.selected)
-                  ? const Color(0xFF60a5fa)
-                  : const Color(0xFF94a3b8),
+                  ? const Color(0xFF2563EB)
+                  : const Color(0xFF475569),
             )),
       ),
       child: NavigationBar(
@@ -240,8 +237,8 @@ class _MainShellState extends State<MainShell> {
         destinations: [
           for (final d in _destinations)
             NavigationDestination(
-              icon: Icon(d.icon, color: const Color(0xFF94a3b8)),
-              selectedIcon: Icon(d.selectedIcon, color: const Color(0xFF60a5fa)),
+              icon: Icon(d.icon, color: const Color(0xFF475569)),
+              selectedIcon: Icon(d.selectedIcon, color: const Color(0xFF2563EB)),
               label: d.label,
             ),
         ],

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/submission.dart';
 import '../models/response.dart';
 import '../services/submission_service.dart';
-import '../utils/constants.dart';
 
 class SubmissionStatusScreen extends StatefulWidget {
   final int submissionId;
@@ -76,9 +75,9 @@ class _SubmissionStatusScreenState extends State<SubmissionStatusScreen> {
           width: 28, height: 28,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isDone ? _statusColor(status) : const Color(0xFF1a2235),
+            color: isDone ? _statusColor(status) : const Color(0xFFF1F5F9),
             border: Border.all(
-              color: isActive ? _statusColor(status) : const Color(0x20FFFFFF),
+              color: isActive ? _statusColor(status) : const Color(0x24000000),
               width: 2,
             ),
           ),
@@ -93,8 +92,8 @@ class _SubmissionStatusScreenState extends State<SubmissionStatusScreen> {
             color: isActive
                 ? _statusColor(status)
                 : isDone
-                    ? const Color(0xFF94a3b8)
-                    : const Color(0xFF475569),
+                    ? const Color(0xFF475569)
+                    : const Color(0xFF94A3B8),
             fontWeight: isActive ? FontWeight.w700 : FontWeight.normal,
             fontSize: 14,
           ),
@@ -106,20 +105,20 @@ class _SubmissionStatusScreenState extends State<SubmissionStatusScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0a0d14),
+      backgroundColor: const Color(0xFFEEF2F6),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0d1117),
+        backgroundColor: const Color(0xFFFFFFFF),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF94a3b8), size: 18),
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF475569), size: 18),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text('Case #${widget.submissionId}',
-          style: const TextStyle(color: Color(0xFFF1F5F9),
+          style: const TextStyle(color: Color(0xFF0F172A),
             fontSize: 18, fontWeight: FontWeight.w700)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: Color(0xFF94a3b8)),
+            icon: const Icon(Icons.refresh, color: Color(0xFF475569)),
             onPressed: _load,
           ),
         ],
@@ -128,10 +127,10 @@ class _SubmissionStatusScreenState extends State<SubmissionStatusScreen> {
           ? const Center(child: CircularProgressIndicator(color: Color(0xFF3b82f6)))
           : _error != null
               ? Center(child: Text(_error!,
-                  style: const TextStyle(color: Color(0xFFfca5a5))))
+                  style: const TextStyle(color: Color(0xFFDC2626))))
               : RefreshIndicator(
                   color: const Color(0xFF3b82f6),
-                  backgroundColor: const Color(0xFF111827),
+                  backgroundColor: const Color(0xFFFFFFFF),
                   onRefresh: _load,
                   child: ListView(
                     padding: const EdgeInsets.all(20),
@@ -140,23 +139,23 @@ class _SubmissionStatusScreenState extends State<SubmissionStatusScreen> {
                       Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF111827),
+                          color: const Color(0xFFFFFFFF),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0x12FFFFFF)),
+                          border: Border.all(color: const Color(0x14000000)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(_submission!.title,
                               style: const TextStyle(
-                                color: Color(0xFFF1F5F9),
+                                color: Color(0xFF0F172A),
                                 fontSize: 18, fontWeight: FontWeight.w700,
                               ),
                             ),
                             const SizedBox(height: 12),
                             Text(_submission!.description,
                               style: const TextStyle(
-                                color: Color(0xFF94a3b8), fontSize: 14, height: 1.6)),
+                                color: Color(0xFF475569), fontSize: 14, height: 1.6)),
                             const SizedBox(height: 16),
                             Wrap(
                               spacing: 8, runSpacing: 8,
@@ -178,16 +177,16 @@ class _SubmissionStatusScreenState extends State<SubmissionStatusScreen> {
                       Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF111827),
+                          color: const Color(0xFFFFFFFF),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0x12FFFFFF)),
+                          border: Border.all(color: const Color(0x14000000)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text('Status Progress',
                               style: TextStyle(
-                                color: Color(0xFFF1F5F9),
+                                color: Color(0xFF0F172A),
                                 fontSize: 15, fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -210,9 +209,9 @@ class _SubmissionStatusScreenState extends State<SubmissionStatusScreen> {
                       Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF111827),
+                          color: const Color(0xFFFFFFFF),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0x12FFFFFF)),
+                          border: Border.all(color: const Color(0x14000000)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,18 +219,18 @@ class _SubmissionStatusScreenState extends State<SubmissionStatusScreen> {
                             Row(
                               children: [
                                 const Text('Responses',
-                                  style: TextStyle(color: Color(0xFFF1F5F9),
+                                  style: TextStyle(color: Color(0xFF0F172A),
                                     fontSize: 15, fontWeight: FontWeight.w700)),
                                 const SizedBox(width: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF1a2235),
+                                    color: const Color(0xFFF1F5F9),
                                     borderRadius: BorderRadius.circular(99),
                                   ),
                                   child: Text('${_responses.length}',
                                     style: const TextStyle(
-                                      color: Color(0xFF94a3b8), fontSize: 12)),
+                                      color: Color(0xFF475569), fontSize: 12)),
                                 ),
                               ],
                             ),
@@ -263,9 +262,9 @@ class _Chip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: const Color(0xFF1a2235),
+        color: const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0x12FFFFFF)),
+        border: Border.all(color: const Color(0x14000000)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -273,7 +272,7 @@ class _Chip extends StatelessWidget {
           Icon(icon, size: 13, color: const Color(0xFF64748b)),
           const SizedBox(width: 5),
           Text(label,
-            style: const TextStyle(color: Color(0xFF94a3b8), fontSize: 12)),
+            style: const TextStyle(color: Color(0xFF475569), fontSize: 12)),
         ],
       ),
     );
@@ -286,7 +285,7 @@ class _StepConnector extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     margin: const EdgeInsets.only(left: 13, top: 2, bottom: 2),
     width: 2, height: 16,
-    color: const Color(0x20FFFFFF),
+    color: const Color(0x24000000),
   );
 }
 
@@ -301,7 +300,7 @@ class _ResponseBubble extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF1a2235),
+        color: const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFF3b82f6).withOpacity(0.2)),
       ),
@@ -315,13 +314,13 @@ class _ResponseBubble extends StatelessWidget {
                 backgroundColor: const Color(0xFF3b82f6).withOpacity(0.3),
                 child: Text(
                   (response.responder ?? 'A')[0].toUpperCase(),
-                  style: const TextStyle(color: Color(0xFF60a5fa),
+                  style: const TextStyle(color: Color(0xFF2563EB),
                     fontWeight: FontWeight.bold, fontSize: 13),
                 ),
               ),
               const SizedBox(width: 8),
               Text(response.responder ?? 'Staff',
-                style: const TextStyle(color: Color(0xFFF1F5F9),
+                style: const TextStyle(color: Color(0xFF0F172A),
                   fontWeight: FontWeight.w600, fontSize: 13)),
               const SizedBox(width: 6),
               Container(
@@ -331,17 +330,17 @@ class _ResponseBubble extends StatelessWidget {
                   borderRadius: BorderRadius.circular(99),
                 ),
                 child: Text(response.responderRole ?? 'staff',
-                  style: const TextStyle(color: Color(0xFF60a5fa), fontSize: 10,
+                  style: const TextStyle(color: Color(0xFF2563EB), fontSize: 10,
                     fontWeight: FontWeight.w700)),
               ),
               const Spacer(),
               Text(formatDate(response.createdAt),
-                style: const TextStyle(color: Color(0xFF475569), fontSize: 11)),
+                style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11)),
             ],
           ),
           const SizedBox(height: 10),
           Text(response.message,
-            style: const TextStyle(color: Color(0xFF94a3b8), fontSize: 13, height: 1.5)),
+            style: const TextStyle(color: Color(0xFF475569), fontSize: 13, height: 1.5)),
         ],
       ),
     );

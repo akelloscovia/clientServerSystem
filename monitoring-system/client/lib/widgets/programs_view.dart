@@ -89,7 +89,7 @@ class _ProgramsViewState extends State<ProgramsView> {
     }
     if (_error != null) {
       return Center(
-        child: Text(_error!, style: const TextStyle(color: Color(0xFFfca5a5))),
+        child: Text(_error!, style: const TextStyle(color: Color(0xFFDC2626))),
       );
     }
     if (_programs.isEmpty) {
@@ -108,7 +108,7 @@ class _ProgramsViewState extends State<ProgramsView> {
 
     return RefreshIndicator(
       color: const Color(0xFF3b82f6),
-      backgroundColor: const Color(0xFF111827),
+      backgroundColor: const Color(0xFFFFFFFF),
       onRefresh: _load,
       child: ListView(
         padding: const EdgeInsets.all(16),
@@ -147,10 +147,10 @@ class _ProgramsViewState extends State<ProgramsView> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF16233b),
+        color: const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(14),
         border: const Border(
-          left: BorderSide(color: Color(0xFFf5b542), width: 4),
+          left: BorderSide(color: Color(0xFFB45309), width: 4),
         ),
       ),
       child: Row(
@@ -161,14 +161,14 @@ class _ProgramsViewState extends State<ProgramsView> {
               children: [
                 Text(label,
                     style: const TextStyle(
-                        color: Color(0xFF94a3b8),
+                        color: Color(0xFF475569),
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.4)),
                 const SizedBox(height: 4),
                 Text(program.title,
                     style: const TextStyle(
-                        color: Color(0xFFF1F5F9),
+                        color: Color(0xFF0F172A),
                         fontSize: 18,
                         fontWeight: FontWeight.w700)),
               ],
@@ -177,7 +177,7 @@ class _ProgramsViewState extends State<ProgramsView> {
           Text(
             countdownSuffix.isEmpty ? countdown : '$countdown $countdownSuffix',
             style: const TextStyle(
-                color: Color(0xFFf5b542),
+                color: Color(0xFFB45309),
                 fontSize: 20,
                 fontWeight: FontWeight.w700),
           ),
@@ -193,10 +193,10 @@ class _ProgramsViewState extends State<ProgramsView> {
       decoration: BoxDecoration(
         color: isNow
             ? const Color(0xFF3b82f6).withOpacity(0.12)
-            : const Color(0xFF111827),
+            : const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isNow ? const Color(0xFF3b82f6) : const Color(0x12FFFFFF),
+          color: isNow ? const Color(0xFF3b82f6) : const Color(0x14000000),
           width: isNow ? 1.5 : 1,
         ),
       ),
@@ -207,7 +207,7 @@ class _ProgramsViewState extends State<ProgramsView> {
             width: 56,
             child: Text(_timeLabel(program.startTime),
                 style: const TextStyle(
-                    color: Color(0xFFF1F5F9),
+                    color: Color(0xFF0F172A),
                     fontWeight: FontWeight.w700,
                     fontSize: 15)),
           ),
@@ -222,7 +222,7 @@ class _ProgramsViewState extends State<ProgramsView> {
                       child: Text(
                         program.title,
                         style: const TextStyle(
-                            color: Color(0xFFF1F5F9),
+                            color: Color(0xFF0F172A),
                             fontWeight: FontWeight.w700,
                             fontSize: 15),
                       ),
@@ -275,7 +275,7 @@ class _ProgramsViewState extends State<ProgramsView> {
                 if ((program.description ?? '').isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(program.description!,
-                      style: const TextStyle(color: Color(0xFF94a3b8), fontSize: 13)),
+                      style: const TextStyle(color: Color(0xFF475569), fontSize: 13)),
                 ],
               ],
             ),
@@ -284,13 +284,13 @@ class _ProgramsViewState extends State<ProgramsView> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: const Color(0xFF1a2235),
+              color: const Color(0xFFF1F5F9),
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: const Color(0x12FFFFFF)),
+              border: Border.all(color: const Color(0x14000000)),
             ),
             child: const Text(AppConstants.orgTag,
                 style: TextStyle(
-                    color: Color(0xFF60a5fa),
+                    color: Color(0xFF2563EB),
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.3)),

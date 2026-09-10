@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 /// so every section (cases, programmes, channels, visitors, users, overview)
 /// looks like one surface.
 class Dash {
-  static const bg = Color(0xFF0a0d14);
-  static const card = Color(0xFF111827);
-  static const field = Color(0xFF1a2235);
-  static const line = Color(0x12FFFFFF);
+  static const bg = Color(0xFFEEF2F6);
+  static const card = Color(0xFFFFFFFF);
+  static const field = Color(0xFFF1F5F9);
+  static const line = Color(0x14000000);
   static const primary = Color(0xFF3b82f6);
-  static const primaryText = Color(0xFF60a5fa);
-  static const ink = Color(0xFFF1F5F9);
-  static const dim = Color(0xFF94a3b8);
+  static const primaryText = Color(0xFF2563EB);
+  static const ink = Color(0xFF0F172A);
+  static const dim = Color(0xFF475569);
   static const faint = Color(0xFF64748b);
   static const danger = Color(0xFFef4444);
   static const ok = Color(0xFF10b981);
@@ -111,7 +111,7 @@ class SectionState extends StatelessWidget {
           children: [
             Text(error!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Color(0xFFfca5a5))),
+                style: const TextStyle(color: Color(0xFFDC2626))),
             const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: onRetry,

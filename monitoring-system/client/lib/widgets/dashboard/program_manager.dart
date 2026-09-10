@@ -357,7 +357,7 @@ class _ProgramEditorState extends State<_ProgramEditor> {
                     ),
                     child: Text(_error!,
                         style: const TextStyle(
-                            color: Color(0xFFfca5a5), fontSize: 13)),
+                            color: Color(0xFFDC2626), fontSize: 13)),
                   ),
                   const SizedBox(height: 12),
                 ],

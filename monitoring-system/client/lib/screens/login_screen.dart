@@ -84,11 +84,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (widget.embedded) {
-      return Container(color: const Color(0xFF0a0d14), child: content);
+      return Container(color: const Color(0xFFEEF2F6), child: content);
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0a0d14),
+      backgroundColor: const Color(0xFFEEF2F6),
       body: Stack(
         children: [
           SafeArea(child: content),
@@ -131,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   'Ministry of Planning and Investment',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Color(0xFFF1F5F9),
+                    color: Color(0xFF0F172A),
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
                     height: 1.2,
@@ -170,9 +170,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF111827),
+                    color: const Color(0xFFFFFFFF),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0x12FFFFFF)),
+                    border: Border.all(color: const Color(0x14000000)),
                   ),
                   child: Form(
                     key: _formKey,
@@ -191,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             child: Text(_error!,
                                 style: const TextStyle(
-                                    color: Color(0xFFfca5a5), fontSize: 13)),
+                                    color: Color(0xFFDC2626), fontSize: 13)),
                           ),
                           const SizedBox(height: 16),
                         ],
@@ -247,12 +247,12 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: const Color(0xFF111827),
+          color: const Color(0xFFFFFFFF),
           shape: BoxShape.circle,
-          border: Border.all(color: const Color(0x12FFFFFF)),
+          border: Border.all(color: const Color(0x14000000)),
         ),
         child: const Icon(Icons.arrow_back_ios_new,
-            size: 16, color: Color(0xFF94a3b8)),
+            size: 16, color: Color(0xFF475569)),
       ),
     );
   }
@@ -278,11 +278,11 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
           decoration: BoxDecoration(
-            color: selected ? const Color(0x263b82f6) : const Color(0xFF0d1422),
+            color: selected ? const Color(0x263b82f6) : const Color(0xFFF1F5F9),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color:
-                  selected ? const Color(0xFF3b82f6) : const Color(0x1AFFFFFF),
+                  selected ? const Color(0xFF3b82f6) : const Color(0x1F000000),
             ),
           ),
           child: Column(
@@ -290,15 +290,15 @@ class _LoginScreenState extends State<LoginScreen> {
               Icon(icon,
                   size: 20,
                   color: selected
-                      ? const Color(0xFF60a5fa)
+                      ? const Color(0xFF2563EB)
                       : const Color(0xFF64748b)),
               const SizedBox(height: 5),
               Text(label,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: selected
-                        ? const Color(0xFFdbeafe)
-                        : const Color(0xFF94a3b8),
+                        ? const Color(0xFF1D4ED8)
+                        : const Color(0xFF475569),
                     fontSize: 11,
                     fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                   )),

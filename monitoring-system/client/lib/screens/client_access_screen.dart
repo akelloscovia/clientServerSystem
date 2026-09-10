@@ -54,7 +54,7 @@ class _ClientAccessScreenState extends State<ClientAccessScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0a0d14),
+      backgroundColor: const Color(0xFFEEF2F6),
       body: Stack(
         children: [
           SafeArea(
@@ -88,7 +88,7 @@ class _ClientAccessScreenState extends State<ClientAccessScreen> {
                       'Ministry of Planning and Investment',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Color(0xFFF1F5F9),
+                        color: Color(0xFF0F172A),
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
                         height: 1.2,
@@ -104,9 +104,9 @@ class _ClientAccessScreenState extends State<ClientAccessScreen> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF111827),
+                        color: const Color(0xFFFFFFFF),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0x12FFFFFF)),
+                        border: Border.all(color: const Color(0x14000000)),
                       ),
                       child: Form(
                         key: _formKey,
@@ -125,7 +125,7 @@ class _ClientAccessScreenState extends State<ClientAccessScreen> {
                                 ),
                                 child: Text(_error!,
                                     style: const TextStyle(
-                                        color: Color(0xFFfca5a5), fontSize: 13)),
+                                        color: Color(0xFFDC2626), fontSize: 13)),
                               ),
                               const SizedBox(height: 16),
                             ],
@@ -182,12 +182,12 @@ class _ClientAccessScreenState extends State<ClientAccessScreen> {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: const Color(0xFF111827),
+          color: const Color(0xFFFFFFFF),
           shape: BoxShape.circle,
-          border: Border.all(color: const Color(0x12FFFFFF)),
+          border: Border.all(color: const Color(0x14000000)),
         ),
         child: const Icon(Icons.arrow_back_ios_new,
-            size: 16, color: Color(0xFF94a3b8)),
+            size: 16, color: Color(0xFF475569)),
       ),
     );
   }

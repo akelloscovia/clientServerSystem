@@ -138,7 +138,7 @@ class _TvChannelViewState extends State<TvChannelView> {
     }
     if (_error != null) {
       return Center(
-        child: Text(_error!, style: const TextStyle(color: Color(0xFFfca5a5))),
+        child: Text(_error!, style: const TextStyle(color: Color(0xFFDC2626))),
       );
     }
     if (_channels.isEmpty) {
@@ -167,12 +167,12 @@ class _TvChannelViewState extends State<TvChannelView> {
                   decoration: BoxDecoration(
                     color: active
                         ? const Color(0xFF3b82f6).withOpacity(0.2)
-                        : const Color(0xFF1a2235),
+                        : const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(99),
                     border: Border.all(
                       color: active
                           ? const Color(0xFF3b82f6)
-                          : const Color(0x12FFFFFF),
+                          : const Color(0x14000000),
                     ),
                   ),
                   child: Center(
@@ -180,8 +180,8 @@ class _TvChannelViewState extends State<TvChannelView> {
                       channel.name,
                       style: TextStyle(
                         color: active
-                            ? const Color(0xFF60a5fa)
-                            : const Color(0xFF94a3b8),
+                            ? const Color(0xFF2563EB)
+                            : const Color(0xFF475569),
                         fontWeight: active ? FontWeight.w700 : FontWeight.w500,
                         fontSize: 13,
                       ),
@@ -220,38 +220,7 @@ class _TvChannelViewState extends State<TvChannelView> {
       return WebViewWidget(controller: _webController!);
     }
     if (_webEmbedUrl != null) {
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          buildEmbeddedChannel(_webEmbedUrl!),
-          Positioned(
-            right: 8,
-            top: 8,
-            child: Material(
-              color: Colors.black54,
-              borderRadius: BorderRadius.circular(8),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(8),
-                onTap: () => openChannelExternally(
-                    _selected?.streamUrl ?? _webEmbedUrl!),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.open_in_new, size: 14, color: Colors.white),
-                      SizedBox(width: 6),
-                      Text('Open channel',
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 12)),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
+      return buildEmbeddedChannel(_webEmbedUrl!);
     }
     if (_chewieController != null) {
       return Chewie(controller: _chewieController!);

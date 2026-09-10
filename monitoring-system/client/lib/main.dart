@@ -12,9 +12,9 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: Color(0xFF0a0d14),
-      systemNavigationBarIconBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Color(0xFFEEF2F6),
+      systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
 
@@ -35,21 +35,25 @@ class MonitoringClientApp extends StatelessWidget {
       title: 'Ministry of Planning and Investment',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0a0d14),
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: const Color(0xFFEEF2F6),
         primaryColor: const Color(0xFF3b82f6),
-        colorScheme: const ColorScheme.dark(
+        colorScheme: const ColorScheme.light(
           primary: Color(0xFF3b82f6),
-          secondary: Color(0xFF60a5fa),
-          surface: Color(0xFF111827),
-          background: Color(0xFF0a0d14),
+          secondary: Color(0xFF2563EB),
+          surface: Color(0xFFFFFFFF),
+          background: Color(0xFFEEF2F6),
         ),
         fontFamily: 'Roboto',
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF0d1117),
+          backgroundColor: Color(0xFFFFFFFF),
+          foregroundColor: Color(0xFF0F172A),
           elevation: 0,
           centerTitle: false,
         ),
+        dialogTheme: const DialogThemeData(backgroundColor: Colors.white),
+        datePickerTheme: const DatePickerThemeData(backgroundColor: Colors.white),
+        timePickerTheme: const TimePickerThemeData(backgroundColor: Colors.white),
       ),
       // The app opens on the login screen; signing in leads to the home
       // page (MainShell). A restored session skips the login screen — a
