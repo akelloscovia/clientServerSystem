@@ -3,7 +3,12 @@ import 'package:flutter/foundation.dart';
 /// Application-wide constants.
 class AppConstants {
   static String get baseUrl {
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+    if (kIsWeb) {
+      // Deployed web build: nginx serves the API at /api on the same
+      // origin as the app, so this works regardless of host/IP/domain.
+      return '/api';
+    }
+    if (defaultTargetPlatform == TargetPlatform.android) {
       return 'http://10.0.2.2:5000/api';
     }
     return 'http://localhost:5000/api';
@@ -12,7 +17,11 @@ class AppConstants {
   /// Base URL of the web dashboard (React), used to build the visitor
   /// sign-in link shown as a QR code on the reception kiosk.
   static String get webPortalBaseUrl {
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+    if (kIsWeb) {
+      // Same origin as this app in production (nginx serves both).
+      return '';
+    }
+    if (defaultTargetPlatform == TargetPlatform.android) {
       return 'http://10.0.2.2:5173';
     }
     return 'http://localhost:5173';

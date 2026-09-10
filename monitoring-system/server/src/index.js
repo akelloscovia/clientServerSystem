@@ -4,8 +4,8 @@ import { prisma } from './db.js';
 
 const app = createApp();
 
-const server = app.listen(config.port, '0.0.0.0', () => {
-  console.log(`monitoring-system API listening on http://0.0.0.0:${config.port} (${config.env})`);
+const server = app.listen(config.port, config.host, () => {
+  console.log(`monitoring-system API listening on http://${config.host}:${config.port} (${config.env})`);
 });
 
 async function shutdown(signal) {
