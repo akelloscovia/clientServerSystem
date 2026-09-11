@@ -62,7 +62,7 @@ class _NewsTickerState extends State<NewsTicker>
               'LATEST',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 15,
+                fontSize: 19,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.5,
               ),

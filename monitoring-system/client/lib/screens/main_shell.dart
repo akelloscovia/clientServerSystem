@@ -5,6 +5,7 @@ import '../services/kiosk_service.dart';
 import '../widgets/kiosk_header.dart';
 import '../widgets/kiosk_home_view.dart';
 import '../widgets/news_ticker.dart';
+import '../widgets/visitor_signin_dropdown.dart';
 
 /// The single public-facing kiosk screen: the branded header, today's
 /// programme schedule and TV channels (side by side, inside [KioskHomeView]),
@@ -63,7 +64,7 @@ class _MainShellState extends State<MainShell> {
       body: SafeArea(
         child: Column(
           children: [
-            const KioskHeader(),
+            const KioskHeader(trailing: VisitorSignInDropdown()),
             const Expanded(child: KioskHomeView()),
             NewsTicker(items: _tickerItems),
           ],

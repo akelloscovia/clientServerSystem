@@ -87,7 +87,7 @@ class _KioskHeaderState extends State<KioskHeader> {
                 DateFormat('EEEE, MMMM d, yyyy').format(_now).toUpperCase(),
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.95),
-                  fontSize: 15,
+                  fontSize: 20,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.4,
                 ),
