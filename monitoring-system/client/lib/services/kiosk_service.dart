@@ -1,5 +1,6 @@
 import '../models/program.dart';
 import '../models/channel.dart';
+import '../models/advertisement.dart';
 import 'api_service.dart';
 
 /// Public, no-login API calls used by the reception kiosk screens.
@@ -27,6 +28,15 @@ class KioskService {
     final data = ApiService.decodeJson(resp);
     return (data['channels'] as List<dynamic>)
         .map((e) => Channel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<Advertisement>> getAdvertisements() async {
+    final resp = await _api.get('/advertisements/');
+    ApiService.checkError(resp);
+    final data = ApiService.decodeJson(resp);
+    return (data['advertisements'] as List<dynamic>)
+        .map((e) => Advertisement.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 }

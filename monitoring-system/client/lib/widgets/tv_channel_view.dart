@@ -6,6 +6,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../models/channel.dart';
 import '../services/kiosk_service.dart';
 import 'web_channel_player.dart';
+import 'advertisement_banner.dart';
 
 /// TV channel switcher + player for the reception kiosk.
 /// Direct video streams (HLS/mp4) play via video_player + chewie; YouTube
@@ -134,7 +135,8 @@ class _TvChannelViewState extends State<TvChannelView> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator(color: Color(0xFF3b82f6)));
+      return const Center(
+          child: CircularProgressIndicator(color: Color(0xFF3b82f6)));
     }
     if (_error != null) {
       return Center(
@@ -163,7 +165,8 @@ class _TvChannelViewState extends State<TvChannelView> {
               return GestureDetector(
                 onTap: () => _selectChannel(channel),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     color: active
                         ? const Color(0xFF3b82f6).withOpacity(0.2)
@@ -194,7 +197,7 @@ class _TvChannelViewState extends State<TvChannelView> {
         ),
         Expanded(
           child: Container(
-            margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             decoration: BoxDecoration(
               color: Colors.black,
               borderRadius: BorderRadius.circular(12),
@@ -203,17 +206,20 @@ class _TvChannelViewState extends State<TvChannelView> {
             child: _buildPlayer(),
           ),
         ),
+        const AdvertisementBanner(),
       ],
     );
   }
 
   Widget _buildPlayer() {
     if (_playerLoading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.white));
+      return const Center(
+          child: CircularProgressIndicator(color: Colors.white));
     }
     if (_playerError != null) {
       return Center(
-        child: Text(_playerError!, style: const TextStyle(color: Colors.white70)),
+        child:
+            Text(_playerError!, style: const TextStyle(color: Colors.white70)),
       );
     }
     if (_webController != null) {

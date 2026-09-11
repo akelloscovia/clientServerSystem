@@ -14,6 +14,7 @@ import { usersRouter } from './routes/users.js';
 import { visitorsRouter } from './routes/visitors.js';
 import { programsRouter } from './routes/programs.js';
 import { channelsRouter } from './routes/channels.js';
+import { advertisementsRouter } from './routes/advertisements.js';
 
 const GROUPS = {
   auth: authRouter,
@@ -24,6 +25,7 @@ const GROUPS = {
   visitors: visitorsRouter,
   programs: programsRouter,
   channels: channelsRouter,
+  advertisements: advertisementsRouter,
 };
 
 /** Build a fresh `/api`-style router (mounted at both /api and /api/v1). */
@@ -53,7 +55,7 @@ export function createApp() {
     origin: origins.length === 1 && origins[0] === '*' ? true : origins,
     credentials: true,
   }));
-  app.use(express.json());
+  app.use(express.json({ limit: '5mb' }));
 
   app.use('/api/v1', buildApiRouter());
   app.use('/api', buildApiRouter());

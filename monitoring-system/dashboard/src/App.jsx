@@ -12,6 +12,7 @@ import VisitorLog from './pages/VisitorLog'
 import VisitorLogDetail from './pages/VisitorLogDetail'
 import Programs from './pages/Programs'
 import Channels from './pages/Channels'
+import Advertisements from './pages/Advertisements'
 
 function ProtectedLayout({ children }) {
   const { user, loading } = useAuth()
@@ -69,6 +70,9 @@ function AppRoutes() {
       } />
       <Route path="/programs" element={
         <ProtectedLayout><StaffOnly><Programs /></StaffOnly></ProtectedLayout>
+      } />
+      <Route path="/advertisements" element={
+        <ProtectedLayout><StaffOnly><Advertisements /></StaffOnly></ProtectedLayout>
       } />
       <Route path="/channels" element={
         <ProtectedLayout><AdminOnly><Channels /></AdminOnly></ProtectedLayout>

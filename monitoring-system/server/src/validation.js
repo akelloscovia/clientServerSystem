@@ -72,6 +72,14 @@ export const channelSchema = z.object({
   is_active: z.boolean().default(true),
 });
 
+export const advertisementSchema = z.object({
+  title: z.string().min(2).max(150),
+  description: z.string().max(500).default(''),
+  image_data: z.string().max(4500000).default(''),
+  link_url: z.string().max(500).default(''),
+  is_active: z.boolean().default(true),
+});
+
 const VISITOR_STATUSES = ['pending', 'assigned', 'attended', 'closed'];
 
 export const visitorCreateSchema = z.object({
