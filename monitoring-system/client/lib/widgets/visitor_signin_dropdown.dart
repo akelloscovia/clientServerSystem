@@ -19,90 +19,73 @@ class VisitorSignInDropdown extends StatefulWidget {
 }
 
 class _VisitorSignInDropdownState extends State<VisitorSignInDropdown> {
-  final _link = LayerLink();
-  OverlayEntry? _entry;
+  bool _open = false;
 
-  void _toggle() => _entry == null ? _open() : _close();
+  void _toggle() => _open ? _close() : _openPanel();
 
-  void _open() {
-    final overlay = Overlay.of(context);
-    _entry = OverlayEntry(
-      builder: (_) => Stack(
-        children: [
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: _close,
+  Future<void> _openPanel() async {
+    setState(() => _open = true);
+    await showGeneralDialog<void>(
+      context: context,
+      barrierLabel: 'Close visitor sign-in',
+      barrierDismissible: true,
+      barrierColor: Colors.transparent,
+      pageBuilder: (dialogContext, animation, secondaryAnimation) {
+        return SafeArea(
+          child: Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10, right: 12, left: 12),
+              child: Material(
+                color: Colors.transparent,
+                child: _VisitorPanel(
+                  onClose: () => Navigator.of(dialogContext).pop(),
+                ),
+              ),
             ),
           ),
-          CompositedTransformFollower(
-            link: _link,
-            showWhenUnlinked: false,
-            targetAnchor: Alignment.bottomRight,
-            followerAnchor: Alignment.topRight,
-            offset: const Offset(0, 10),
-            child: Material(
-              color: Colors.transparent,
-              child: _VisitorPanel(onClose: _close),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
-    overlay.insert(_entry!);
-    setState(() {});
+    if (mounted) setState(() => _open = false);
   }
 
-  void _close() {
-    _entry?.remove();
-    _entry = null;
-    if (mounted) setState(() {});
-  }
-
-  @override
-  void dispose() {
-    _entry?.remove();
-    super.dispose();
-  }
+  void _close() => Navigator.of(context).maybePop();
 
   @override
   Widget build(BuildContext context) {
-    final open = _entry != null;
-    return CompositedTransformTarget(
-      link: _link,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _toggle,
-          borderRadius: BorderRadius.circular(20),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(open ? 0.22 : 0.12),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.4)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.how_to_reg, size: 16, color: Colors.white),
-                const SizedBox(width: 6),
-                const Text(
-                  'Visitor Sign-In',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Icon(
-                  open ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                  size: 18,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _toggle,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(_open ? 0.22 : 0.12),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withOpacity(0.4)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.how_to_reg, size: 16, color: Colors.white),
+              const SizedBox(width: 6),
+              const Text(
+                'Visitor Sign-In',
+                style: TextStyle(
                   color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                _open ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                size: 18,
+                color: Colors.white,
+              ),
+            ],
           ),
         ),
       ),
@@ -235,7 +218,8 @@ class _VisitorPanelState extends State<_VisitorPanel> {
                       borderRadius: BorderRadius.circular(14),
                       child: const Padding(
                         padding: EdgeInsets.all(4),
-                        child: Icon(Icons.close, size: 18, color: AppColors.textMuted),
+                        child: Icon(Icons.close,
+                            size: 18, color: AppColors.textMuted),
                       ),
                     ),
                   ],
@@ -250,11 +234,10 @@ class _VisitorPanelState extends State<_VisitorPanel> {
                 const SizedBox(height: 18),
                 const _OrDivider(),
                 const SizedBox(height: 16),
-
                 if (_error != null) _banner(_error!, isError: true),
                 if (_success != null) _banner(_success!, isError: false),
-                if (_error != null || _success != null) const SizedBox(height: 14),
-
+                if (_error != null || _success != null)
+                  const SizedBox(height: 14),
                 AppFormField(
                   label: 'FULL NAME',
                   hint: 'Jane Doe',
@@ -294,7 +277,8 @@ class _VisitorPanelState extends State<_VisitorPanel> {
                   label: 'REASON FOR VISIT',
                   hint: 'Meeting with the Permanent Secretary',
                   controller: _reasonCtrl,
-                  validator: (v) => Validators.validateMinLength(v, 3, 'Reason'),
+                  validator: (v) =>
+                      Validators.validateMinLength(v, 3, 'Reason'),
                 ),
                 const SizedBox(height: 12),
                 AppFormField(
@@ -396,7 +380,8 @@ class _VisitorPanelState extends State<_VisitorPanel> {
                 Expanded(
                   child: Text(
                     value,
-                    style: const TextStyle(color: AppColors.textPrimary, fontSize: 13),
+                    style: const TextStyle(
+                        color: AppColors.textPrimary, fontSize: 13),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -421,9 +406,11 @@ class _VisitorPanelState extends State<_VisitorPanel> {
       ),
       child: Row(
         children: [
-          Icon(isError ? Icons.error_outline : Icons.check_circle_outline, color: fg, size: 18),
+          Icon(isError ? Icons.error_outline : Icons.check_circle_outline,
+              color: fg, size: 18),
           const SizedBox(width: 8),
-          Expanded(child: Text(text, style: TextStyle(color: fg, fontSize: 12.5))),
+          Expanded(
+              child: Text(text, style: TextStyle(color: fg, fontSize: 12.5))),
         ],
       ),
     );
