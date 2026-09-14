@@ -193,12 +193,13 @@ class _ProgramsViewState extends State<ProgramsView> {
       decoration: BoxDecoration(
         color: isNow
             ? const Color(0xFF3b82f6).withOpacity(0.12)
-            : const Color(0xFFFFFFFF),
+            : const Color(0xFFEFF6FF),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: isNow ? const Color(0xFF3b82f6) : const Color(0x14000000),
-          width: isNow ? 1.5 : 1,
-        ),
+        border: isNow
+            ? Border.all(color: const Color(0xFF3b82f6), width: 1.5)
+            : const Border(
+                left: BorderSide(color: Color(0xFF2563EB), width: 4),
+              ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

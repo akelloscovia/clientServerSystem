@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import ministryLogo from '../assets/ministry_logo.jpg'
 import './Login.css'
 
 /** Pull the most useful message out of an axios error / thrown Error. */
@@ -50,7 +51,9 @@ export default function Login() {
       <div className="login-card">
         {/* Logo */}
         <div className="login-logo">
-          <div className="login-logo-icon">⚡</div>
+          <div className="login-logo-icon">
+            <img src={ministryLogo} alt="Ministry crest" />
+          </div>
           <h1 className="login-title">Ministry of Planning and Investment</h1>
           <p className="login-subtitle">Admin &amp; Secretary Portal</p>
         </div>

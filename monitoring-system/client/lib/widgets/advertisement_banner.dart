@@ -44,7 +44,7 @@ class _AdvertisementBannerState extends State<AdvertisementBanner> {
         child: Row(
           children: [
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(20),
               child: Image.asset(
                 'assets/advertise_with_us_logo.jpg',
                 height: double.infinity,
@@ -56,7 +56,9 @@ class _AdvertisementBannerState extends State<AdvertisementBanner> {
               child: Text('Advertise with us',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      color: Color(0xFF64748B), fontWeight: FontWeight.w700)),
+                      color: Color(0xFF64748B),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 20)),
             ),
           ],
         ),
@@ -65,7 +67,7 @@ class _AdvertisementBannerState extends State<AdvertisementBanner> {
 
     final ad = _ads[_index % _ads.length];
     return Container(
-      height: 92,
+      height: 160,
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
@@ -80,7 +82,7 @@ class _AdvertisementBannerState extends State<AdvertisementBanner> {
           children: [
             if (ad.imageData.isNotEmpty)
               SizedBox(
-                width: 150,
+                width: 260,
                 height: double.infinity,
                 child: Image.memory(base64Decode(ad.imageData.split(',').last),
                     fit: BoxFit.cover,
@@ -89,7 +91,7 @@ class _AdvertisementBannerState extends State<AdvertisementBanner> {
             Expanded(
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -99,13 +101,14 @@ class _AdvertisementBannerState extends State<AdvertisementBanner> {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                               color: Colors.white,
-                              fontWeight: FontWeight.w800)),
+                              fontWeight: FontWeight.w800,
+                              fontSize: 20)),
                       if (ad.description.isNotEmpty)
                         Text(ad.description,
-                            maxLines: 2,
+                            maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                                color: Colors.white70, fontSize: 12)),
+                                color: Colors.white70, fontSize: 14)),
                     ]),
               ),
             ),

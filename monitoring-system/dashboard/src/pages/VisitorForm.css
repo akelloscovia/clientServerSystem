@@ -57,7 +57,7 @@
 .visitor-ticket-id {
   font-size: 28px;
   font-weight: 800;
-  color: var(--accent-light);
+  color: var(--accent);
   font-family: monospace;
   margin-top: 4px;
 }
