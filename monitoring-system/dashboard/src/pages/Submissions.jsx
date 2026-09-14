@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
+import { RefreshCw } from 'lucide-react'
 import { submissionService } from '../services/submissions'
 import SubmissionTable from '../components/SubmissionTable'
 import { useAuth } from '../context/AuthContext'
@@ -43,7 +44,7 @@ export default function Submissions() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">📋 Submissions</h1>
+          <h1 className="page-title">Submissions</h1>
           <p className="page-subtitle">{total} total cases</p>
         </div>
       </div>
@@ -78,7 +79,7 @@ export default function Submissions() {
             </select>
           </div>
           <button id="btn-refresh" className="btn btn-ghost" onClick={load}>
-            🔄 Refresh
+            <RefreshCw size={15} /> Refresh
           </button>
         </div>
       </div>

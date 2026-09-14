@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
+import { Calendar } from 'lucide-react'
 import { programService } from '../services/programs'
 import { useAuth } from '../context/AuthContext'
 
@@ -87,7 +88,7 @@ export default function Programs() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">📅 Daily Programs</h1>
+          <h1 className="page-title">Daily Programs</h1>
           <p className="page-subtitle">Schedule shown on the reception kiosk</p>
         </div>
         <button id="btn-add-program" className="btn btn-primary" onClick={openCreate}>+ Add Program</button>
@@ -98,7 +99,7 @@ export default function Programs() {
         : !programs.length
           ? (
             <div className="card" style={{ textAlign: 'center', padding: '60px' }}>
-              <div style={{ fontSize: '48px', marginBottom: '12px' }}>📅</div>
+              <Calendar size={44} color="var(--text-muted)" style={{ marginBottom: 12 }} />
               <p className="text-muted">No programs scheduled yet.</p>
             </div>
           )

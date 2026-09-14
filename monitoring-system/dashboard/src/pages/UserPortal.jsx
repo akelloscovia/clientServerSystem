@@ -10,7 +10,7 @@ export default function UserPortal() {
   const [userEmail, setUserEmail] = useState('')
   const [userToken, setUserToken] = useState(localStorage.getItem('userToken') || '')
   const [mode, setMode] = useState('login') // login, scan, qr
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState(null) // { text, type: 'success' | 'error' }
   const [loading, setLoading] = useState(false)
   const [qrData, setQrData] = useState('')
 
@@ -25,33 +25,33 @@ export default function UserPortal() {
       // Extract token or ID from QR code
       setUserToken(scannedData)
       localStorage.setItem('userToken', scannedData)
-      setMessage('✓ QR Code scanned successfully!')
+      setMessage({ text: 'QR code scanned successfully!', type: 'success' })
       setMode('access')
     } catch (error) {
-      setMessage('✗ Failed to scan QR code')
+      setMessage({ text: 'Failed to scan QR code', type: 'error' })
     }
   }
 
   const handleEmailAccess = async () => {
     if (!userEmail) {
-      setMessage('Please enter your email')
+      setMessage({ text: 'Please enter your email', type: 'error' })
       return
     }
 
     setLoading(true)
     try {
       const response = await api.post('/auth/user-portal', { email: userEmail })
-      
+
       // Generate QR code for this email
       const qrContent = `${window.location.origin}/user-access?token=${response.data.token}`
       setQrData(qrContent)
-      
+
       setUserToken(response.data.token)
       localStorage.setItem('userToken', response.data.token)
-      setMessage('✓ Access granted! Use the QR code below to access from other devices.')
+      setMessage({ text: 'Access granted! Use the QR code below to access from other devices.', type: 'success' })
       setMode('qr')
     } catch (error) {
-      setMessage('✗ Email not found or access denied')
+      setMessage({ text: 'Email not found or access denied', type: 'error' })
     } finally {
       setLoading(false)
     }
@@ -62,7 +62,7 @@ export default function UserPortal() {
     setUserEmail('')
     localStorage.removeItem('userToken')
     setMode('login')
-    setMessage('')
+    setMessage(null)
     setQrData('')
   }
 
@@ -73,13 +73,13 @@ export default function UserPortal() {
   return (
     <div className="user-portal-container">
       <div className="portal-header">
-        <h1>📱 User Portal</h1>
+        <h1>User Portal</h1>
         <p>Access your submissions easily</p>
       </div>
 
       {message && (
-        <div className={`message ${message.includes('✗') ? 'error' : 'success'}`}>
-          {message}
+        <div className={`message ${message.type}`}>
+          {message.text}
         </div>
       )}
 
@@ -89,7 +89,7 @@ export default function UserPortal() {
           
           <div className="access-methods">
             <div className="method-card">
-              <h3>📧 Email Access</h3>
+              <h3>Email Access</h3>
               <p>Enter your email to get started</p>
               <input
                 type="email"
@@ -110,7 +110,7 @@ export default function UserPortal() {
             <div className="divider">OR</div>
 
             <div className="method-card">
-              <h3>📸 Scan QR Code</h3>
+              <h3>Scan QR Code</h3>
               <p>Scan a QR code to access directly</p>
               <QRCodeScanner 
                 onScan={handleQRScan}

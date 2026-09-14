@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { UserCheck, Check, MessageSquare, PenLine, Loader2, Send, Trash2 } from 'lucide-react'
 import { visitorService } from '../services/visitors'
 import { submissionService } from '../services/submissions'
 import { useAuth } from '../context/AuthContext'
@@ -173,7 +174,9 @@ export default function VisitorLogDetail() {
       {user?.role === 'admin' && (
         <div className="card" style={{ marginBottom: '24px' }}>
           <div className="flex items-center justify-between" style={{ marginBottom: assigning ? '16px' : '0' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 600 }}>👤 Assignment</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <UserCheck size={17} /> Assignment
+            </h3>
             <button id="btn-toggle-assign" className="btn btn-ghost btn-sm" onClick={() => setAssigning(!assigning)}>
               {assigning ? 'Cancel' : '+ Assign to Staff'}
             </button>
@@ -191,7 +194,7 @@ export default function VisitorLogDetail() {
                 </select>
               </div>
               <button id="btn-confirm-assign" type="submit" className="btn btn-primary btn-sm">
-                ✅ Confirm Assignment
+                <Check size={15} /> Confirm Assignment
               </button>
             </form>
           )}
@@ -200,8 +203,8 @@ export default function VisitorLogDetail() {
 
       {/* Reply thread */}
       <div className="card" style={{ marginBottom: '24px' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>
-          💬 Replies ({visitor.replies?.length || 0})
+        <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <MessageSquare size={17} /> Replies ({visitor.replies?.length || 0})
         </h3>
         {!visitor.replies?.length
           ? <p className="text-muted">No replies yet.</p>
@@ -224,7 +227,9 @@ export default function VisitorLogDetail() {
       </div>
 
       <div className="card" style={{ marginBottom: '24px' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>✍️ Add Reply</h3>
+        <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <PenLine size={17} /> Add Reply
+        </h3>
         <form onSubmit={handleReply}>
           <div className="form-group" style={{ marginBottom: '16px' }}>
             <textarea id="reply-message" className="form-textarea" rows={4}
@@ -233,7 +238,9 @@ export default function VisitorLogDetail() {
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button id="btn-send-reply" type="submit" className="btn btn-primary" disabled={replying || !replyMessage.trim()}>
-              {replying ? '⏳ Sending...' : '📤 Send Reply'}
+              {replying
+                ? <><Loader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} /> Sending...</>
+                : <><Send size={16} /> Send Reply</>}
             </button>
           </div>
         </form>
@@ -242,8 +249,8 @@ export default function VisitorLogDetail() {
       {/* Delete (admin only) */}
       {user?.role === 'admin' && (
         <div className="card" style={{ borderColor: 'var(--danger)' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '12px', color: 'var(--danger)' }}>
-            🗑️ Delete Visitor Entry
+          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '12px', color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Trash2 size={17} /> Delete Visitor Entry
           </h3>
           {!confirmingDelete ? (
             <button id="btn-delete-visitor" className="btn btn-danger btn-sm" onClick={() => setConfirmingDelete(true)}>

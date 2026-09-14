@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Loader2, LogIn, Lock } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import ministryLogo from '../assets/ministry_logo.jpg'
 import './Login.css'
@@ -99,12 +100,14 @@ export default function Login() {
             disabled={loading}
             style={{ justifyContent: 'center' }}
           >
-            {loading ? '⏳ Signing in...' : '🔐 Sign In'}
+            {loading
+              ? <><Loader2 size={18} style={{ animation: 'spin 0.8s linear infinite' }} /> Signing in...</>
+              : <><LogIn size={18} /> Sign In</>}
           </button>
         </form>
 
         <p className="login-hint">
-          🔒 This portal is restricted to administrators and secretaries only.
+          <Lock size={12} style={{ verticalAlign: '-1px' }} /> This portal is restricted to administrators and secretaries only.
         </p>
       </div>
     </div>

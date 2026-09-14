@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { PenLine, Loader2, Send } from 'lucide-react'
 import { submissionService } from '../services/submissions'
 
 export default function ResponseForm({ submissionId, onSuccess }) {
@@ -26,8 +27,8 @@ export default function ResponseForm({ submissionId, onSuccess }) {
 
   return (
     <div className="card">
-      <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', color: 'var(--text-primary)' }}>
-        ✍️ Add Response
+      <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <PenLine size={17} /> Add Response
       </h3>
       {error && <div className="alert alert-error">{error}</div>}
       <form onSubmit={handleSubmit}>
@@ -50,7 +51,9 @@ export default function ResponseForm({ submissionId, onSuccess }) {
             className="btn btn-primary"
             disabled={loading || !message.trim()}
           >
-            {loading ? '⏳ Sending...' : '📤 Send Response'}
+            {loading
+              ? <><Loader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} /> Sending...</>
+              : <><Send size={16} /> Send Response</>}
           </button>
         </div>
       </form>

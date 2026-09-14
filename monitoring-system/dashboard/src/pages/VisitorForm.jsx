@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { CheckCircle2 } from 'lucide-react'
 import { visitorService } from '../services/visitors'
 import './VisitorForm.css'
 
@@ -52,7 +53,7 @@ export default function VisitorForm() {
     return (
       <div className="visitor-form-page">
         <div className="visitor-form-card visitor-success">
-          <div className="visitor-success-icon">✅</div>
+          <CheckCircle2 className="visitor-success-icon" size={48} color="var(--success)" />
           <h1>You're checked in</h1>
           <p className="text-muted">Thank you, {ticket.name}. Please have a seat — a member of staff will be with you shortly.</p>
           <div className="visitor-ticket">

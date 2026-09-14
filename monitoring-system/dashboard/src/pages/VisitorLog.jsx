@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
+import { RefreshCw } from 'lucide-react'
 import { visitorService } from '../services/visitors'
 import VisitorTable from '../components/VisitorTable'
 
@@ -36,7 +37,7 @@ export default function VisitorLog() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">🧾 Visitor Log</h1>
+          <h1 className="page-title">Visitor Log</h1>
           <p className="page-subtitle">{total} total visitor entries</p>
         </div>
       </div>
@@ -57,7 +58,7 @@ export default function VisitorLog() {
             </select>
           </div>
           <button id="btn-refresh" className="btn btn-ghost" onClick={load}>
-            🔄 Refresh
+            <RefreshCw size={15} /> Refresh
           </button>
         </div>
       </div>

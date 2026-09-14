@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Megaphone } from 'lucide-react'
 import { advertisementService } from '../services/advertisements'
 
 const emptyForm = { title: '', description: '', image_data: '', link_url: '', is_active: true }
@@ -65,14 +66,14 @@ export default function Advertisements() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">📣 Advertisements</h1>
+          <h1 className="page-title">Advertisements</h1>
           <p className="page-subtitle">Manage the adverts shown below the reception TV display.</p>
         </div>
         <button className="btn btn-primary" onClick={openCreate}>+ Add Advertisement</button>
       </div>
       {error && !showModal && <div className="alert alert-error">{error}</div>}
       {loading ? <div className="spinner-wrapper"><div className="spinner" /></div> : !ads.length ? (
-        <div className="card" style={{ textAlign: 'center', padding: '60px' }}><div style={{ fontSize: 48 }}>📣</div><p className="text-muted">No advertisements published yet.</p></div>
+        <div className="card" style={{ textAlign: 'center', padding: '60px' }}><Megaphone size={44} color="var(--text-muted)" style={{ marginBottom: 12 }} /><p className="text-muted">No advertisements published yet.</p></div>
       ) : (
         <div className="table-wrapper"><table><thead><tr><th>Preview</th><th>Title</th><th>Link</th><th>Status</th><th>Actions</th></tr></thead><tbody>
           {ads.map((ad) => <tr key={ad.id}><td>{ad.image_data ? <img src={ad.image_data} alt="" style={{ width: 100, height: 54, objectFit: 'cover', borderRadius: 6 }} /> : <span className="text-muted">Text</span>}</td><td style={{ fontWeight: 600 }}>{ad.title}</td><td className="text-muted text-sm">{ad.link_url || 'No link'}</td><td><span className={`badge ${ad.is_active ? 'badge-resolved' : 'badge-closed'}`}>{ad.is_active ? 'Active' : 'Inactive'}</span></td><td><div className="flex gap-8"><button className="btn btn-ghost btn-sm" onClick={() => openEdit(ad)}>Edit</button><button className="btn btn-danger btn-sm" onClick={() => remove(ad)}>Delete</button></div></td></tr>)}

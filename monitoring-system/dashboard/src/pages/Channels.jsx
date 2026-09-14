@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
+import { Tv } from 'lucide-react'
 import { channelService } from '../services/channels'
 
 const STREAM_TYPES = ['hls', 'youtube', 'mp4', 'other']
@@ -83,7 +84,7 @@ export default function Channels() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">📺 TV Channels</h1>
+          <h1 className="page-title">TV Channels</h1>
           <p className="page-subtitle">Channels available on the reception kiosk — pick existing ones or add your own URL</p>
         </div>
         <button id="btn-add-channel" className="btn btn-primary" onClick={openCreate}>+ Add Channel</button>
@@ -94,7 +95,7 @@ export default function Channels() {
         : !channels.length
           ? (
             <div className="card" style={{ textAlign: 'center', padding: '60px' }}>
-              <div style={{ fontSize: '48px', marginBottom: '12px' }}>📺</div>
+              <Tv size={44} color="var(--text-muted)" style={{ marginBottom: 12 }} />
               <p className="text-muted">No channels added yet.</p>
             </div>
           )

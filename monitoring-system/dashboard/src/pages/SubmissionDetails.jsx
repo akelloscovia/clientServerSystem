@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { UserCheck, Check, MessageSquare } from 'lucide-react'
 import { submissionService } from '../services/submissions'
 import SubmissionDetails from '../components/SubmissionDetails'
 import ResponseForm from '../components/ResponseForm'
@@ -118,7 +119,9 @@ export default function SubmissionDetail() {
       {user?.role === 'admin' && (
         <div className="card" style={{ marginBottom: '24px' }}>
           <div className="flex items-center justify-between" style={{ marginBottom: assigning ? '16px' : '0' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 600 }}>👤 Assignment</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <UserCheck size={17} /> Assignment
+            </h3>
             <button
               id="btn-toggle-assign"
               className="btn btn-ghost btn-sm"
@@ -148,7 +151,7 @@ export default function SubmissionDetail() {
                 </div>
               </div>
               <button id="btn-confirm-assign" type="submit" className="btn btn-primary btn-sm">
-                ✅ Confirm Assignment
+                <Check size={15} /> Confirm Assignment
               </button>
             </form>
           )}
@@ -157,8 +160,8 @@ export default function SubmissionDetail() {
 
       {/* Responses thread */}
       <div className="card" style={{ marginBottom: '24px' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>
-          💬 Response Thread ({responses.length})
+        <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <MessageSquare size={17} /> Response Thread ({responses.length})
         </h3>
         {responses.length === 0
           ? <p className="text-muted">No responses yet.</p>

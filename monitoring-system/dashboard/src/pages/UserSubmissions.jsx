@@ -62,7 +62,7 @@ export default function UserSubmissions() {
     <div className="user-submissions-container">
       <div className="submissions-header">
         <div>
-          <h1>📋 My Submissions</h1>
+          <h1>My Submissions</h1>
           {userInfo && <p>Welcome, {userInfo.email}</p>}
         </div>
         <button onClick={handleLogout} className="btn-logout">Logout</button>

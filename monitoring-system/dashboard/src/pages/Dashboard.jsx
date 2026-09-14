@@ -1,4 +1,8 @@
 import { useEffect, useState } from 'react'
+import {
+  ClipboardList, Clock, Search, UserCheck,
+  CheckCircle2, Lock, Users, FolderOpen,
+} from 'lucide-react'
 import { submissionService } from '../services/submissions'
 import {
   AreaChart, Area, BarChart, Bar,
@@ -9,14 +13,14 @@ import {
 const COLORS = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6']
 
 const STAT_CARDS = [
-  { key: 'total',        label: 'Total Cases',    icon: '📋', color: '#3b82f6' },
-  { key: 'pending',      label: 'Pending',         icon: '⏳', color: '#f59e0b' },
-  { key: 'under_review', label: 'Under Review',    icon: '🔍', color: '#6366f1' },
-  { key: 'assigned',     label: 'Assigned',        icon: '👤', color: '#3b82f6' },
-  { key: 'resolved',     label: 'Resolved',        icon: '✅', color: '#10b981' },
-  { key: 'closed',       label: 'Closed',          icon: '🔒', color: '#64748b' },
-  { key: 'total_users',  label: 'Registered Users',icon: '👥', color: '#8b5cf6' },
-  { key: 'secretaries',  label: 'Secretaries',     icon: '🗂️', color: '#06b6d4' },
+  { key: 'total',        label: 'Total Cases',    icon: ClipboardList, color: '#3b82f6' },
+  { key: 'pending',      label: 'Pending',         icon: Clock,         color: '#f59e0b' },
+  { key: 'under_review', label: 'Under Review',    icon: Search,        color: '#6366f1' },
+  { key: 'assigned',     label: 'Assigned',        icon: UserCheck,     color: '#3b82f6' },
+  { key: 'resolved',     label: 'Resolved',        icon: CheckCircle2,  color: '#10b981' },
+  { key: 'closed',       label: 'Closed',          icon: Lock,          color: '#64748b' },
+  { key: 'total_users',  label: 'Registered Users',icon: Users,         color: '#8b5cf6' },
+  { key: 'secretaries',  label: 'Secretaries',     icon: FolderOpen,    color: '#06b6d4' },
 ]
 
 export default function Dashboard() {
@@ -43,7 +47,7 @@ export default function Dashboard() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">📊 Dashboard</h1>
+          <h1 className="page-title">Dashboard</h1>
           <p className="page-subtitle">Real-time overview of all submissions and cases</p>
         </div>
       </div>
@@ -53,7 +57,7 @@ export default function Dashboard() {
         {STAT_CARDS.map(card => (
           <div className="stat-card" key={card.key}
             style={{ '--card-accent': card.color }}>
-            <div className="stat-icon">{card.icon}</div>
+            <card.icon className="stat-icon" size={26} color={card.color} strokeWidth={2} />
             <div className="stat-label">{card.label}</div>
             <div className="stat-value">{overview[card.key] ?? 0}</div>
           </div>
@@ -65,7 +69,7 @@ export default function Dashboard() {
         {/* Daily trend */}
         <div className="card">
           <h3 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '20px' }}>
-            📈 Submissions — Last 7 Days
+            Submissions — Last 7 Days
           </h3>
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={daily}>
@@ -75,14 +79,14 @@ export default function Dashboard() {
                   <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.06)" />
               <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 11 }}
                 tickFormatter={d => d.slice(5)} />
               <YAxis tick={{ fill: '#64748b', fontSize: 11 }} />
               <Tooltip
-                contentStyle={{ background: '#1a2235', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                labelStyle={{ color: '#94a3b8' }}
-                itemStyle={{ color: '#60a5fa' }}
+                contentStyle={{ background: '#ffffff', border: '1px solid rgba(15,23,42,0.1)', borderRadius: '8px' }}
+                labelStyle={{ color: '#475569' }}
+                itemStyle={{ color: '#3b82f6' }}
               />
               <Area type="monotone" dataKey="count" stroke="#3b82f6"
                 fill="url(#grad1)" strokeWidth={2} name="Submissions" />
@@ -93,7 +97,7 @@ export default function Dashboard() {
         {/* By Category */}
         <div className="card">
           <h3 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '20px' }}>
-            🗂️ By Category
+            By Category
           </h3>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
@@ -104,9 +108,9 @@ export default function Dashboard() {
                 ))}
               </Pie>
               <Tooltip
-                contentStyle={{ background: '#1a2235', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                contentStyle={{ background: '#ffffff', border: '1px solid rgba(15,23,42,0.1)', borderRadius: '8px' }}
               />
-              <Legend wrapperStyle={{ fontSize: '12px', color: '#94a3b8' }} />
+              <Legend wrapperStyle={{ fontSize: '12px', color: '#475569' }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -115,15 +119,15 @@ export default function Dashboard() {
       {/* By Priority */}
       <div className="card">
         <h3 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '20px' }}>
-          🚨 By Priority
+          By Priority
         </h3>
         <ResponsiveContainer width="100%" height={160}>
           <BarChart data={byPriority} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.06)" />
             <XAxis type="number" tick={{ fill: '#64748b', fontSize: 11 }} />
-            <YAxis type="category" dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} width={65} />
+            <YAxis type="category" dataKey="name" tick={{ fill: '#475569', fontSize: 12 }} width={65} />
             <Tooltip
-              contentStyle={{ background: '#1a2235', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+              contentStyle={{ background: '#ffffff', border: '1px solid rgba(15,23,42,0.1)', borderRadius: '8px' }}
             />
             <Bar dataKey="value" radius={[0, 6, 6, 0]} name="Cases">
               {byPriority.map((entry, i) => (

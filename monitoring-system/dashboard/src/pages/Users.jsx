@@ -45,7 +45,7 @@ export default function Users() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">👥 User Management</h1>
+          <h1 className="page-title">User Management</h1>
           <p className="page-subtitle">Manage user accounts and roles</p>
         </div>
       </div>

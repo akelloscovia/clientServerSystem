@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { ScrollText } from 'lucide-react'
 
 export default function VisitorTable({ visitors }) {
   const navigate = useNavigate()
@@ -6,7 +7,7 @@ export default function VisitorTable({ visitors }) {
   if (!visitors?.length) {
     return (
       <div className="card" style={{ textAlign: 'center', padding: '60px' }}>
-        <div style={{ fontSize: '48px', marginBottom: '12px' }}>🧾</div>
+        <ScrollText size={44} color="var(--text-muted)" style={{ marginBottom: 12 }} />
         <p className="text-muted">No visitor entries found.</p>
       </div>
     )

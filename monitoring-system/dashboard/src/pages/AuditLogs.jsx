@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { RefreshCw } from 'lucide-react'
 import { submissionService } from '../services/submissions'
 
 export default function AuditLogs() {
@@ -41,11 +42,11 @@ export default function AuditLogs() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">🔍 Audit Logs</h1>
+          <h1 className="page-title">Audit Logs</h1>
           <p className="page-subtitle">{total} total audit entries</p>
         </div>
         <button className="btn btn-ghost" id="btn-refresh-logs" onClick={() => load(page)}>
-          🔄 Refresh
+          <RefreshCw size={15} /> Refresh
         </button>
       </div>
 

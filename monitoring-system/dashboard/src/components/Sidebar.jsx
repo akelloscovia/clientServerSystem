@@ -1,16 +1,21 @@
 import { NavLink, useNavigate } from 'react-router-dom'
+import {
+  LayoutDashboard, ClipboardList, ScrollText, Calendar,
+  Megaphone, Tv, Users, Search, LogOut,
+} from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import ministryLogo from '../assets/ministry_logo.jpg'
 import './Sidebar.css'
 
 const NAV_ITEMS = [
-  { path: '/dashboard', label: 'Dashboard', icon: '📊', roles: ['admin'] },
-  { path: '/submissions', label: 'Submissions', icon: '📋', roles: ['admin', 'secretary'] },
-  { path: '/visitor-log', label: 'Visitor Log', icon: '🧾', roles: ['admin', 'secretary'] },
-  { path: '/programs', label: 'Programs', icon: '📅', roles: ['admin', 'secretary'] },
-  { path: '/advertisements', label: 'Advertisements', icon: '📣', roles: ['admin', 'secretary'] },
-  { path: '/channels', label: 'TV Channels', icon: '📺', roles: ['admin'] },
-  { path: '/users', label: 'Users', icon: '👥', roles: ['admin'] },
-  { path: '/audit-logs', label: 'Audit Logs', icon: '🔍', roles: ['admin'] },
+  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin'] },
+  { path: '/submissions', label: 'Submissions', icon: ClipboardList, roles: ['admin', 'secretary'] },
+  { path: '/visitor-log', label: 'Visitor Log', icon: ScrollText, roles: ['admin', 'secretary'] },
+  { path: '/programs', label: 'Programs', icon: Calendar, roles: ['admin', 'secretary'] },
+  { path: '/advertisements', label: 'Advertisements', icon: Megaphone, roles: ['admin', 'secretary'] },
+  { path: '/channels', label: 'TV Channels', icon: Tv, roles: ['admin'] },
+  { path: '/users', label: 'Users', icon: Users, roles: ['admin'] },
+  { path: '/audit-logs', label: 'Audit Logs', icon: Search, roles: ['admin'] },
 ]
 
 export default function Sidebar() {
@@ -28,7 +33,9 @@ export default function Sidebar() {
     <aside className="sidebar">
       {/* Logo */}
       <div className="sidebar-logo">
-        <div className="logo-icon">⚡</div>
+        <div className="logo-icon">
+          <img src={ministryLogo} alt="Ministry crest" />
+        </div>
         <div>
           <div className="logo-name">Ministry of Planning and Investment</div>
           <div className="logo-sub">Control Panel</div>
@@ -54,7 +61,7 @@ export default function Sidebar() {
             to={item.path}
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
           >
-            <span className="nav-icon">{item.icon}</span>
+            <item.icon className="nav-icon" size={18} strokeWidth={2} />
             <span className="nav-label">{item.label}</span>
           </NavLink>
         ))}
@@ -63,7 +70,7 @@ export default function Sidebar() {
       {/* Logout */}
       <div className="sidebar-footer">
         <button className="btn btn-ghost w-full" onClick={handleLogout} id="btn-logout">
-          <span>🚪</span> Sign Out
+          <LogOut size={16} strokeWidth={2} /> Sign Out
         </button>
       </div>
     </aside>

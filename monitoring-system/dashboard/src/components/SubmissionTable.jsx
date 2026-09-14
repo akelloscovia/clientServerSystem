@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { Inbox } from 'lucide-react'
 
 const STATUS_ORDER = ['pending', 'under_review', 'assigned', 'resolved', 'closed']
 const PRIORITY_ORDER = ['urgent', 'high', 'medium', 'low']
@@ -9,7 +10,7 @@ export default function SubmissionTable({ submissions, onStatusChange, showAssig
   if (!submissions?.length) {
     return (
       <div className="card" style={{ textAlign: 'center', padding: '60px' }}>
-        <div style={{ fontSize: '48px', marginBottom: '12px' }}>📭</div>
+        <Inbox size={44} color="var(--text-muted)" style={{ marginBottom: 12 }} />
         <p className="text-muted">No submissions found.</p>
       </div>
     )
