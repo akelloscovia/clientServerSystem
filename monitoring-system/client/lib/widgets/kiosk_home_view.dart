@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 import 'programs_view.dart';
 import 'tv_channel_view.dart';
+import 'visitor_queue_view.dart';
 
-/// The reception "home" screen: today's programme schedule and the TV
-/// channels shown side by side (either one can be swapped to the other
-/// side). Visitors sign in by scanning the printed QR code at reception,
-/// which opens the web visitor form — see `AppConstants.visitorFormUrl`.
+enum KioskRole { reception, minister }
+
+/// The kiosk "home" screen. A Reception/Minister toggle switches the main
+/// pane between today's programme schedule (Reception) and the Minister's
+/// visitor queue — either way the TV channels sit alongside it, and the two
+/// sides can be swapped.
 class KioskHomeView extends StatefulWidget {
   const KioskHomeView({super.key});
 
@@ -16,13 +19,90 @@ class KioskHomeView extends StatefulWidget {
 
 class _KioskHomeViewState extends State<KioskHomeView> {
   bool _tvOnRight = true;
+  KioskRole _role = KioskRole.reception;
 
   @override
   Widget build(BuildContext context) {
-    const programsPane = ProgramsView();
+    final mainPane = _role == KioskRole.minister
+        ? const VisitorQueueView()
+        : const ProgramsView();
+    return Column(
+      children: [
+        _buildRoleToggle(),
+        Expanded(child: _buildSideBySideLayout(mainPane)),
+      ],
+    );
+  }
+
+  Widget _buildRoleToggle() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceAlt,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _roleButton('Reception', KioskRole.reception, Icons.tv_outlined),
+              _roleButton('Minister', KioskRole.minister, Icons.how_to_reg_outlined),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _roleButton(String label, KioskRole role, IconData icon) {
+    final active = _role == role;
+    return InkWell(
+      onTap: () => setState(() => _role = role),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: active ? AppColors.surface : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: active
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon,
+                size: 15,
+                color: active ? AppColors.primaryDark : AppColors.textMuted),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: active ? AppColors.primaryDark : AppColors.textMuted,
+                fontSize: 13,
+                fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSideBySideLayout(Widget mainPane) {
     const tvPane = TvChannelView();
-    final left = _tvOnRight ? programsPane : tvPane;
-    final right = _tvOnRight ? tvPane : programsPane;
+    final left = _tvOnRight ? mainPane : tvPane;
+    final right = _tvOnRight ? tvPane : mainPane;
 
     final swapButton = IconButton(
       tooltip: 'Swap sides',
