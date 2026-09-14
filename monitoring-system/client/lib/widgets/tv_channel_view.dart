@@ -5,6 +5,7 @@ import 'package:chewie/chewie.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../models/channel.dart';
 import '../services/kiosk_service.dart';
+import '../services/overlay_state.dart';
 import 'web_channel_player.dart';
 import 'advertisement_banner.dart';
 
@@ -203,7 +204,17 @@ class _TvChannelViewState extends State<TvChannelView> {
               borderRadius: BorderRadius.circular(12),
             ),
             clipBehavior: Clip.antiAlias,
-            child: _buildPlayer(),
+            // The web/native video player renders via a platform view (an
+            // `<iframe>` on web) which sits outside Flutter's own
+            // hit-testing — it swallows clicks meant for anything drawn on
+            // top of it (e.g. the visitor sign-in dialog) unless explicitly
+            // disabled. See overlay_state.dart.
+            child: ValueListenableBuilder<bool>(
+              valueListenable: overlayOpen,
+              builder: (context, blocked, child) =>
+                  IgnorePointer(ignoring: blocked, child: child),
+              child: _buildPlayer(),
+            ),
           ),
         ),
         const AdvertisementBanner(),

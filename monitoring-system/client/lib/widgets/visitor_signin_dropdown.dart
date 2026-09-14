@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import '../services/overlay_state.dart';
 import '../services/visitor_service.dart';
 import '../utils/app_colors.dart';
 import '../utils/constants.dart';
@@ -25,6 +26,10 @@ class _VisitorSignInDropdownState extends State<VisitorSignInDropdown> {
 
   Future<void> _openPanel() async {
     setState(() => _open = true);
+    // The panel overlaps the TV channel iframe; a platform view is a real
+    // DOM element that would otherwise swallow clicks meant for the panel
+    // underneath it visually — see overlay_state.dart.
+    overlayOpen.value = true;
     await showGeneralDialog<void>(
       context: context,
       barrierLabel: 'Close visitor sign-in',
@@ -47,6 +52,7 @@ class _VisitorSignInDropdownState extends State<VisitorSignInDropdown> {
         );
       },
     );
+    overlayOpen.value = false;
     if (mounted) setState(() => _open = false);
   }
 

@@ -34,16 +34,31 @@ class _AdvertisementBannerState extends State<AdvertisementBanner> {
   Widget build(BuildContext context) {
     if (_ads.isEmpty) {
       return Container(
+        height: 92,
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-        padding: const EdgeInsets.all(12),
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           color: const Color(0xFFE2E8F0),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: const Center(
-          child: Text('Advertise with us',
-              style: TextStyle(
-                  color: Color(0xFF64748B), fontWeight: FontWeight.w700)),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Image.asset(
+                'assets/advertise_with_us_logo.jpg',
+                height: double.infinity,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              ),
+            ),
+            const Expanded(
+              child: Text('Advertise with us',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Color(0xFF64748B), fontWeight: FontWeight.w700)),
+            ),
+          ],
         ),
       );
     }
