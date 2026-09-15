@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 import '../utils/app_colors.dart';
 import 'programs_view.dart';
 import 'tv_channel_view.dart';
@@ -9,7 +10,8 @@ enum KioskRole { reception, minister }
 /// The kiosk "home" screen. A Reception/Minister toggle switches the main
 /// pane between today's programme schedule (Reception) and the Minister's
 /// visitor queue — either way the TV channels sit alongside it, and the two
-/// sides can be swapped.
+/// sides can be swapped. The visitor queue is Minister-office business, so
+/// secretaries only ever see the Reception layout — no toggle is shown.
 class KioskHomeView extends StatefulWidget {
   const KioskHomeView({super.key});
 
@@ -21,14 +23,17 @@ class _KioskHomeViewState extends State<KioskHomeView> {
   bool _tvOnRight = true;
   KioskRole _role = KioskRole.reception;
 
+  bool get _canSeeMinisterView =>
+      AuthService().currentUser?.role != 'secretary';
+
   @override
   Widget build(BuildContext context) {
-    final mainPane = _role == KioskRole.minister
-        ? const VisitorQueueView()
-        : const ProgramsView();
+    final showMinisterView = _canSeeMinisterView && _role == KioskRole.minister;
+    final mainPane =
+        showMinisterView ? const VisitorQueueView() : const ProgramsView();
     return Column(
       children: [
-        _buildRoleToggle(),
+        if (_canSeeMinisterView) _buildRoleToggle(),
         Expanded(child: _buildSideBySideLayout(mainPane)),
       ],
     );

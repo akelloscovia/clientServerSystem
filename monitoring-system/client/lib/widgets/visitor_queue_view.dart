@@ -43,7 +43,7 @@ class _VisitorQueueViewState extends State<VisitorQueueView> {
       final waiting = all
           .where((v) => v.status == 'pending' || v.status == 'assigned')
           .toList()
-        ..sort((a, b) => (a.createdAt ?? '').compareTo(b.createdAt ?? ''));
+        ..sort((a, b) => _arrivalTime(a).compareTo(_arrivalTime(b)));
       if (!mounted) return;
       setState(() {
         _visitors = waiting;
@@ -57,6 +57,19 @@ class _VisitorQueueViewState extends State<VisitorQueueView> {
         _loading = false;
       });
     }
+  }
+
+  /// When this visitor arrived, for first-come-first-served ordering. Prefers
+  /// the visit date + time-in shown on their card (what a viewer reads as
+  /// "when they came"); falls back to the sign-in record's creation time,
+  /// and finally to the end of the queue so a visitor with no timestamp at
+  /// all doesn't jump ahead of everyone else.
+  DateTime _arrivalTime(Visitor v) {
+    if ((v.visitDate ?? '').isNotEmpty && (v.timeIn ?? '').isNotEmpty) {
+      final parsed = DateTime.tryParse('${v.visitDate}T${v.timeIn}:00');
+      if (parsed != null) return parsed;
+    }
+    return DateTime.tryParse(v.createdAt ?? '') ?? DateTime(9999);
   }
 
   Future<void> _setStatus(Visitor v, String status) async {
