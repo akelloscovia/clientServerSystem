@@ -92,12 +92,19 @@ class _VisitorQueueViewState extends State<VisitorQueueView> {
     return parts.take(2).map((p) => p[0]).join().toUpperCase();
   }
 
+  /// "Sep 10, 10:00am" when the visit date is known, otherwise just the time
+  /// — the date is what lets a viewer tell entries from different days apart
+  /// in a queue that's ordered chronologically rather than by time-of-day.
   String _timeLabel(Visitor v) {
     if (v.timeIn == null || v.timeIn!.isEmpty) return '--';
     final parts = v.timeIn!.split(':');
     final h = int.tryParse(parts[0]) ?? 0;
     final m = parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0;
-    return DateFormat('h:mma').format(DateTime(2000, 1, 1, h, m)).toLowerCase();
+    final timeStr =
+        DateFormat('h:mma').format(DateTime(2000, 1, 1, h, m)).toLowerCase();
+    final visitDate = DateTime.tryParse(v.visitDate ?? '');
+    if (visitDate == null) return timeStr;
+    return '${DateFormat('MMM d').format(visitDate)}, $timeStr';
   }
 
   void _openDetail(Visitor v) {
