@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import { asyncHandler } from '../middleware/error.js';
-import { requireAuth, adminRequired, activeUserRequired } from '../middleware/auth.js';
+import { requireAuth, adminRequired, activeUserRequired, staffRequired } from '../middleware/auth.js';
 import { HttpError } from '../utils/httpError.js';
 import { getStats, getAuditLogs } from '../services/monitoringService.js';
-import { getNotifications, markRead, markAllRead } from '../services/notificationService.js';
+import {
+  getNotifications, markRead, markAllRead, getNotificationTargets, sendStaffNotification,
+} from '../services/notificationService.js';
 
 export const monitoringRouter = Router();
 
@@ -26,6 +28,21 @@ monitoringRouter.get('/audit-logs', requireAuth, adminRequired, asyncHandler(asy
 
 monitoringRouter.get('/notifications', requireAuth, activeUserRequired, asyncHandler(async (req, res) => {
   res.json(await getNotifications(req.user.id));
+}));
+
+monitoringRouter.get('/notification-targets', requireAuth, staffRequired, asyncHandler(async (req, res) => {
+  res.json(await getNotificationTargets(req.user));
+}));
+
+monitoringRouter.post('/notifications', requireAuth, staffRequired, asyncHandler(async (req, res) => {
+  const targetUserId = Number(req.body?.target_user_id);
+  if (!Number.isInteger(targetUserId)) throw new HttpError(400, 'target_user_id must be an integer.');
+  res.status(201).json(await sendStaffNotification(
+    req.user,
+    targetUserId,
+    String(req.body?.message || ''),
+    req.ip,
+  ));
 }));
 
 monitoringRouter.patch('/notifications/read-all', requireAuth, activeUserRequired, asyncHandler(async (req, res) => {

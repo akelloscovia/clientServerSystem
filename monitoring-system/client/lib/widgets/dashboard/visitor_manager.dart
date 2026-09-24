@@ -42,7 +42,8 @@ class _VisitorManagerState extends State<VisitorManager> {
   Future<void> _load() async {
     if (mounted) setState(() => _loading = true);
     try {
-      final visitors = await _service.list(status: _filter.isEmpty ? null : _filter);
+      final visitors =
+          await _service.list(status: _filter.isEmpty ? null : _filter);
       final secretaries =
           widget.isAdmin ? await _subs.getSecretaries() : <User>[];
       if (!mounted) return;
@@ -80,7 +81,8 @@ class _VisitorManagerState extends State<VisitorManager> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Dash.card,
-        title: Text('Reply to ${v.name}', style: const TextStyle(color: Dash.ink)),
+        title:
+            Text('Reply to ${v.name}', style: const TextStyle(color: Dash.ink)),
         content: TextField(
           controller: controller,
           maxLines: 4,
@@ -119,8 +121,8 @@ class _VisitorManagerState extends State<VisitorManager> {
       builder: (context) => StatefulBuilder(
         builder: (context, setD) => AlertDialog(
           backgroundColor: Dash.card,
-          title: Text('Assign ${v.name}',
-              style: const TextStyle(color: Dash.ink)),
+          title:
+              Text('Assign ${v.name}', style: const TextStyle(color: Dash.ink)),
           content: DropdownButtonFormField<int>(
             initialValue: selected,
             dropdownColor: Dash.field,
@@ -183,7 +185,14 @@ class _VisitorManagerState extends State<VisitorManager> {
     }
   }
 
-  static const _filters = ['', 'pending', 'assigned', 'attended', 'closed'];
+  static const _filters = [
+    '',
+    'waiting',
+    'pending',
+    'assigned',
+    'attended',
+    'closed'
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -267,9 +276,10 @@ class _VisitorManagerState extends State<VisitorManager> {
         Row(children: [
           Expanded(
             child: Text(
-              v.name + ((v.company ?? '').isNotEmpty ? '  ·  ${v.company}' : ''),
-              style: const TextStyle(
-                  color: Dash.ink, fontWeight: FontWeight.w700),
+              v.name +
+                  ((v.company ?? '').isNotEmpty ? '  ·  ${v.company}' : ''),
+              style:
+                  const TextStyle(color: Dash.ink, fontWeight: FontWeight.w700),
             ),
           ),
           Container(
@@ -301,8 +311,7 @@ class _VisitorManagerState extends State<VisitorManager> {
           Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Text('Assigned to ${v.assignee}',
-                style: const TextStyle(
-                    color: Dash.primaryText, fontSize: 12)),
+                style: const TextStyle(color: Dash.primaryText, fontSize: 12)),
           ),
         for (final r in v.replies)
           Container(
@@ -325,37 +334,41 @@ class _VisitorManagerState extends State<VisitorManager> {
             ),
           ),
         const SizedBox(height: 10),
-        Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
-          DropdownButton<String>(
-            value: v.status,
-            dropdownColor: Dash.field,
-            style: const TextStyle(color: Dash.ink, fontSize: 13),
-            underline: const SizedBox.shrink(),
-            items: Visitor.statuses
-                .map((s) =>
-                    DropdownMenuItem(value: s, child: Text(_cap(s))))
-                .toList(),
-            onChanged: (s) {
-              if (s != null && s != v.status) _setStatus(v, s);
-            },
-          ),
-          OutlinedButton.icon(
-              onPressed: () => _reply(v),
-              icon: const Icon(Icons.reply, size: 16),
-              label: const Text('Reply')),
-          if (widget.isAdmin) ...[
-            OutlinedButton.icon(
-                onPressed: () => _assign(v),
-                icon: const Icon(Icons.person_add, size: 16),
-                label: const Text('Assign')),
-            TextButton.icon(
-                onPressed: () => _delete(v),
-                icon: const Icon(Icons.delete_outline,
-                    size: 16, color: Dash.danger),
-                label: const Text('Delete',
-                    style: TextStyle(color: Dash.danger))),
-          ],
-        ]),
+        Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              DropdownButton<String>(
+                value: v.status,
+                dropdownColor: Dash.field,
+                style: const TextStyle(color: Dash.ink, fontSize: 13),
+                underline: const SizedBox.shrink(),
+                items: Visitor.statuses
+                    .map(
+                        (s) => DropdownMenuItem(value: s, child: Text(_cap(s))))
+                    .toList(),
+                onChanged: (s) {
+                  if (s != null && s != v.status) _setStatus(v, s);
+                },
+              ),
+              OutlinedButton.icon(
+                  onPressed: () => _reply(v),
+                  icon: const Icon(Icons.reply, size: 16),
+                  label: const Text('Reply')),
+              if (widget.isAdmin) ...[
+                OutlinedButton.icon(
+                    onPressed: () => _assign(v),
+                    icon: const Icon(Icons.person_add, size: 16),
+                    label: const Text('Assign')),
+                TextButton.icon(
+                    onPressed: () => _delete(v),
+                    icon: const Icon(Icons.delete_outline,
+                        size: 16, color: Dash.danger),
+                    label: const Text('Delete',
+                        style: TextStyle(color: Dash.danger))),
+              ],
+            ]),
       ]),
     );
   }

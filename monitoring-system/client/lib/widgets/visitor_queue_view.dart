@@ -2,15 +2,19 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/visitor.dart';
+import '../services/auth_service.dart';
+import '../services/submission_service.dart';
 import '../services/visitor_service.dart';
 import '../utils/app_colors.dart';
 
 /// The Minister's visitor queue: everyone still waiting to be seen (status
-/// `pending` or `assigned`), with quick Allow In / Postpone actions. Sits
+/// `waiting`, `pending`, or `assigned`), with quick Allow In / Postpone actions. Sits
 /// alongside [ProgramsView] as the other half of [KioskHomeView]'s
 /// Reception/Minister toggle.
 class VisitorQueueView extends StatefulWidget {
-  const VisitorQueueView({super.key});
+  final ValueChanged<bool>? onDialogChanged;
+
+  const VisitorQueueView({super.key, this.onDialogChanged});
 
   @override
   State<VisitorQueueView> createState() => _VisitorQueueViewState();
@@ -20,6 +24,7 @@ class _VisitorQueueViewState extends State<VisitorQueueView> {
   final _service = VisitorService();
   List<Visitor> _visitors = [];
   bool _loading = true;
+  int? _updatingVisitorId;
   String? _error;
   Timer? _pollTimer;
 
@@ -41,7 +46,10 @@ class _VisitorQueueViewState extends State<VisitorQueueView> {
     try {
       final all = await _service.list();
       final waiting = all
-          .where((v) => v.status == 'pending' || v.status == 'assigned')
+          .where((v) =>
+              v.status == 'waiting' ||
+              v.status == 'pending' ||
+              v.status == 'assigned')
           .toList()
         ..sort((a, b) => _arrivalTime(a).compareTo(_arrivalTime(b)));
       if (!mounted) return;
@@ -72,16 +80,27 @@ class _VisitorQueueViewState extends State<VisitorQueueView> {
     return DateTime.tryParse(v.createdAt ?? '') ?? DateTime(9999);
   }
 
-  Future<void> _setStatus(Visitor v, String status) async {
-    Navigator.of(context).pop();
+  Future<bool> _setStatus(Visitor v, String status) async {
+    setState(() => _updatingVisitorId = v.id);
     try {
       await _service.updateStatus(v.id, status);
-      _load();
+      if (status == 'attended') {
+        final ministerName = AuthService().currentUser?.name ?? 'The minister';
+        final message = '$ministerName is ready to meet ${v.name}.';
+        // The status action must not wait for optional notification delivery.
+        SubmissionService().notifySecretaries(message).catchError((_) {});
+      }
+      return true;
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted) return false;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
       );
+      return false;
+    } finally {
+      if (mounted && _updatingVisitorId == v.id) {
+        setState(() => _updatingVisitorId = null);
+      }
     }
   }
 
@@ -108,55 +127,130 @@ class _VisitorQueueViewState extends State<VisitorQueueView> {
   }
 
   void _openDetail(Visitor v) {
+    var submitting = false;
+    widget.onDialogChanged?.call(true);
     showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: AppColors.primary.withOpacity(0.14),
-              foregroundColor: AppColors.primaryDark,
-              child: Text(_initials(v.name),
-                  style:
-                      const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          Future<void> submit(String status) async {
+            if (submitting) return;
+            setDialogState(() => submitting = true);
+            final updated = await _setStatus(v, status);
+            if (!dialogContext.mounted) return;
+            if (updated) {
+              Navigator.of(dialogContext).pop();
+              ScaffoldMessenger.of(this.context).showSnackBar(
+                SnackBar(
+                  content: Text(status == 'attended'
+                      ? '${v.name} has been allowed in.'
+                      : '${v.name} has been postponed.'),
+                ),
+              );
+              if (status == 'attended' && mounted) {
+                setState(() {
+                  _visitors =
+                      _visitors.where((visitor) => visitor.id != v.id).toList();
+                });
+              }
+              _load();
+            } else {
+              setDialogState(() => submitting = false);
+            }
+          }
+
+          return AlertDialog(
+            title: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: AppColors.primary.withOpacity(0.14),
+                  foregroundColor: AppColors.primaryDark,
+                  child: Text(_initials(v.name),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 13)),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(v.name,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w700)),
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(v.name,
-                  style:
-                      const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _detailRow(
+                      'Organization',
+                      (v.company ?? '').isNotEmpty
+                          ? v.company!
+                          : 'Individual visitor'),
+                  _detailRow('Reason', v.reasonForVisit),
+                  if ((v.description ?? '').isNotEmpty)
+                    _detailRow('Details', v.description!),
+                  _detailRow('Time in', _timeLabel(v)),
+                  _detailRow(
+                      'Status',
+                      v.assignee != null
+                          ? '${v.status} · ${v.assignee}'
+                          : v.status),
+                  Container(
+                    margin: const EdgeInsets.only(top: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: (v.status == 'waiting'
+                              ? const Color(0xFF0EA5E9)
+                              : v.status == 'pending'
+                                  ? AppColors.warning
+                                  : AppColors.primary)
+                          .withOpacity(0.14),
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                    child: Text(
+                      v.status == 'waiting'
+                          ? 'WAITING FOR ACTION'
+                          : v.status == 'pending'
+                              ? 'PENDING'
+                              : 'READY FOR ACTION',
+                      style: TextStyle(
+                        color: v.status == 'waiting'
+                            ? const Color(0xFF0369A1)
+                            : v.status == 'pending'
+                                ? const Color(0xFFB45309)
+                                : AppColors.primaryDark,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _detailRow('Organization',
-                  (v.company ?? '').isNotEmpty ? v.company! : 'Individual visitor'),
-              _detailRow('Reason', v.reasonForVisit),
-              if ((v.description ?? '').isNotEmpty)
-                _detailRow('Details', v.description!),
-              _detailRow('Time in', _timeLabel(v)),
-              _detailRow('Status',
-                  v.assignee != null ? '${v.status} · ${v.assignee}' : v.status),
+            actions: [
+              TextButton(
+                onPressed: () => submit('pending'),
+                child: const Text('Postpone'),
+              ),
+              FilledButton(
+                style:
+                    FilledButton.styleFrom(backgroundColor: AppColors.primary),
+                onPressed: () => submit('attended'),
+                child: submitting
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Allow In'),
+              ),
             ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => _setStatus(v, 'closed'),
-            child: const Text('Postpone'),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
-            onPressed: () => _setStatus(v, 'attended'),
-            child: const Text('Allow In'),
-          ),
-        ],
+          );
+        },
       ),
-    );
+    ).whenComplete(() => widget.onDialogChanged?.call(false));
   }
 
   Widget _detailRow(String label, String value) {
@@ -168,8 +262,8 @@ class _VisitorQueueViewState extends State<VisitorQueueView> {
           SizedBox(
             width: 90,
             child: Text(label,
-                style:
-                    const TextStyle(color: AppColors.textMuted, fontSize: 12.5)),
+                style: const TextStyle(
+                    color: AppColors.textMuted, fontSize: 12.5)),
           ),
           Expanded(
             child: Text(value,
@@ -207,8 +301,8 @@ class _VisitorQueueViewState extends State<VisitorQueueView> {
             decoration: BoxDecoration(
               color: AppColors.surfaceAlt,
               borderRadius: BorderRadius.circular(14),
-              border:
-                  const Border(left: BorderSide(color: AppColors.primary, width: 4)),
+              border: const Border(
+                  left: BorderSide(color: AppColors.primary, width: 4)),
             ),
             child: Row(
               children: [
@@ -247,7 +341,18 @@ class _VisitorQueueViewState extends State<VisitorQueueView> {
   }
 
   Widget _buildVisitorTile(Visitor v) {
-    final waiting = v.status == 'pending';
+    final isWaiting = v.status == 'waiting';
+    final isPending = v.status == 'pending';
+    final statusColor = isWaiting
+        ? const Color(0xFF0EA5E9)
+        : isPending
+            ? AppColors.warning
+            : AppColors.primary;
+    final statusLabel = isWaiting
+        ? 'WAITING'
+        : isPending
+            ? 'PENDING'
+            : 'ASSIGNED';
     return InkWell(
       onTap: () => _openDetail(v),
       borderRadius: BorderRadius.circular(14),
@@ -261,11 +366,12 @@ class _VisitorQueueViewState extends State<VisitorQueueView> {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: AppColors.primary.withOpacity(0.14),
-              foregroundColor: AppColors.primaryDark,
+              backgroundColor: statusColor.withOpacity(0.14),
+              foregroundColor:
+                  isPending ? const Color(0xFFB45309) : AppColors.primaryDark,
               child: Text(_initials(v.name),
-                  style:
-                      const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w700, fontSize: 13)),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -283,17 +389,16 @@ class _VisitorQueueViewState extends State<VisitorQueueView> {
                                 fontWeight: FontWeight.w700)),
                       ),
                       Container(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: (waiting ? AppColors.warning : AppColors.primary)
-                              .withOpacity(0.14),
+                          color: statusColor.withOpacity(0.14),
                           borderRadius: BorderRadius.circular(99),
                         ),
                         child: Text(
-                          waiting ? 'WAITING' : 'ASSIGNED',
+                          statusLabel,
                           style: TextStyle(
-                            color: waiting
+                            color: isPending
                                 ? const Color(0xFFB45309)
                                 : AppColors.primaryDark,
                             fontSize: 10,

@@ -42,6 +42,8 @@ class Dash {
 
   static Color visitorStatus(String s) {
     switch (s) {
+      case 'waiting':
+        return const Color(0xFF0EA5E9);
       case 'pending':
         return const Color(0xFFf59e0b);
       case 'assigned':

@@ -22,6 +22,7 @@ class KioskHomeView extends StatefulWidget {
 class _KioskHomeViewState extends State<KioskHomeView> {
   bool _tvOnRight = true;
   KioskRole _role = KioskRole.reception;
+  bool _visitorDialogOpen = false;
 
   bool get _canSeeMinisterView =>
       AuthService().currentUser?.role != 'secretary';
@@ -29,8 +30,12 @@ class _KioskHomeViewState extends State<KioskHomeView> {
   @override
   Widget build(BuildContext context) {
     final showMinisterView = _canSeeMinisterView && _role == KioskRole.minister;
-    final mainPane =
-        showMinisterView ? const VisitorQueueView() : const ProgramsView();
+    final mainPane = showMinisterView
+        ? VisitorQueueView(
+            onDialogChanged: (open) =>
+                setState(() => _visitorDialogOpen = open),
+          )
+        : const ProgramsView();
     return Column(
       children: [
         if (_canSeeMinisterView) _buildRoleToggle(),
@@ -55,7 +60,8 @@ class _KioskHomeViewState extends State<KioskHomeView> {
             mainAxisSize: MainAxisSize.min,
             children: [
               _roleButton('Reception', KioskRole.reception, Icons.tv_outlined),
-              _roleButton('Minister', KioskRole.minister, Icons.how_to_reg_outlined),
+              _roleButton(
+                  'Minister', KioskRole.minister, Icons.how_to_reg_outlined),
             ],
           ),
         ),
@@ -106,8 +112,9 @@ class _KioskHomeViewState extends State<KioskHomeView> {
 
   Widget _buildSideBySideLayout(Widget mainPane) {
     const tvPane = TvChannelView();
-    final left = _tvOnRight ? mainPane : tvPane;
-    final right = _tvOnRight ? tvPane : mainPane;
+    final hiddenTvPane = _visitorDialogOpen ? const SizedBox() : tvPane;
+    final left = _tvOnRight ? mainPane : hiddenTvPane;
+    final right = _tvOnRight ? hiddenTvPane : mainPane;
 
     final swapButton = IconButton(
       tooltip: 'Swap sides',
@@ -147,7 +154,11 @@ class _KioskHomeViewState extends State<KioskHomeView> {
           children: [
             Expanded(child: left),
             Row(
-              children: [Expanded(child: divider), swapButton, Expanded(child: divider)],
+              children: [
+                Expanded(child: divider),
+                swapButton,
+                Expanded(child: divider)
+              ],
             ),
             Expanded(child: right),
           ],

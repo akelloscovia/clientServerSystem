@@ -11,6 +11,7 @@ export default function VisitorLogDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const visitorId = Number(id)
   const [visitor, setVisitor] = useState(null)
   const [staff, setStaff] = useState([])
   const [loading, setLoading] = useState(true)
@@ -25,16 +26,22 @@ export default function VisitorLogDetail() {
   const [success, setSuccess] = useState('')
 
   const load = useCallback(async () => {
+    if (!Number.isInteger(visitorId) || visitorId <= 0) {
+      setError('Invalid visitor id.')
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     try {
-      const v = await visitorService.get(id)
+      const v = await visitorService.get(visitorId)
       setVisitor(v)
     } catch {
       setError('Failed to load visitor entry.')
     } finally {
       setLoading(false)
     }
-  }, [id])
+  }, [visitorId])
 
   useEffect(() => {
     load()
@@ -64,10 +71,10 @@ export default function VisitorLogDetail() {
 
   const handleAssign = async (e) => {
     e.preventDefault()
-    if (!selectedStaff) return
+    if (!selectedStaff || !Number.isInteger(visitorId) || visitorId <= 0) return
     setError(''); setSuccess('')
     try {
-      await visitorService.assign(id, parseInt(selectedStaff))
+      await visitorService.assign(visitorId, parseInt(selectedStaff))
       setSuccess('Visitor assigned successfully!')
       setAssigning(false)
       load()
@@ -78,11 +85,11 @@ export default function VisitorLogDetail() {
 
   const handleReply = async (e) => {
     e.preventDefault()
-    if (!replyMessage.trim()) return
+    if (!replyMessage.trim() || !Number.isInteger(visitorId) || visitorId <= 0) return
     setReplying(true)
     setError(''); setSuccess('')
     try {
-      await visitorService.reply(id, replyMessage.trim())
+      await visitorService.reply(visitorId, replyMessage.trim())
       setReplyMessage('')
       load()
     } catch {
@@ -93,10 +100,11 @@ export default function VisitorLogDetail() {
   }
 
   const handleDelete = async () => {
+    if (!Number.isInteger(visitorId) || visitorId <= 0) return
     setDeleting(true)
     setError('')
     try {
-      await visitorService.remove(id)
+      await visitorService.remove(visitorId)
       navigate('/visitor-log')
     } catch {
       setError('Failed to delete visitor entry.')

@@ -15,6 +15,7 @@ import { visitorsRouter } from './routes/visitors.js';
 import { programsRouter } from './routes/programs.js';
 import { channelsRouter } from './routes/channels.js';
 import { advertisementsRouter } from './routes/advertisements.js';
+import Pusher from 'pusher';
 
 const GROUPS = {
   auth: authRouter,
@@ -56,6 +57,23 @@ export function createApp() {
     credentials: true,
   }));
   app.use(express.json({ limit: '5mb' }));
+
+  app.post('/api/pusher/auth', requireAuth, activeUserRequired, asyncHandler(async (req, res) => {
+    if (!config.pusher.appId || !config.pusher.key || !config.pusher.secret) {
+      throw new Error('Pusher is not configured on the server.');
+    }
+    const channelName = String(req.body?.channel_name || '');
+    const expectedChannel = `private-user-${req.user.id}`;
+    if (channelName !== expectedChannel) throw new Error('Invalid private channel.');
+    const pusher = new Pusher({
+      appId: config.pusher.appId,
+      key: config.pusher.key,
+      secret: config.pusher.secret,
+      cluster: config.pusher.cluster,
+      useTLS: true,
+    });
+    res.send(pusher.authenticate(req.body.socket_id, channelName));
+  }));
 
   app.use('/api/v1', buildApiRouter());
   app.use('/api', buildApiRouter());

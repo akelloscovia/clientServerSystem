@@ -2,14 +2,19 @@ import 'package:flutter/foundation.dart';
 
 /// Application-wide constants.
 class AppConstants {
+  static const pusherKey = String.fromEnvironment('PUSHER_KEY');
+  static const pusherCluster = String.fromEnvironment(
+    'PUSHER_CLUSTER',
+    defaultValue: 'mt1',
+  );
+
   static String get baseUrl {
     if (kIsWeb) {
       // Local `flutter run -d chrome` serves the app from a dev server on a
       // high port with no nginx in front, so a relative `/api` would 404.
       // Talk to the API server directly in that case.
       final uri = Uri.base;
-      final isLocalHost =
-          uri.host == 'localhost' || uri.host == '127.0.0.1';
+      final isLocalHost = uri.host == 'localhost' || uri.host == '127.0.0.1';
       if (isLocalHost && uri.port != 80 && uri.port != 443) {
         return 'http://localhost:5000/api';
       }
@@ -25,9 +30,32 @@ class AppConstants {
 
   /// Base URL of the web dashboard (React), used to build the visitor
   /// sign-in link shown as a QR code on the reception kiosk.
+  ///
+  /// Scanned QR codes must use a reachable host from the visitor's device, not
+  /// a local-only `localhost` address. The default is the public deployment
+  /// address. Override with
+  /// `--dart-define=VISITOR_FORM_BASE_URL=http://<host>:9046` when needed.
   static String get webPortalBaseUrl {
+    const configuredBaseUrl = String.fromEnvironment(
+      'VISITOR_FORM_BASE_URL',
+      defaultValue: 'http://188.166.8.72:9046',
+    );
+    if (configuredBaseUrl.trim().isNotEmpty) {
+      return configuredBaseUrl.replaceFirst(RegExp(r'/$'), '');
+    }
+
     if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       return 'http://10.0.2.2:5173';
+    }
+    if (kIsWeb) {
+      final uri = Uri.base;
+      final isLocalHost = uri.host == 'localhost' || uri.host == '127.0.0.1';
+      if (!isLocalHost) {
+        return uri
+            .replace(path: '', query: '', fragment: '')
+            .toString()
+            .replaceFirst(RegExp(r'/$'), '');
+      }
     }
     return 'http://localhost:5173';
   }

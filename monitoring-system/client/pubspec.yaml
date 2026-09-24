@@ -28,6 +28,12 @@ dependencies:
   # QR code rendering (visitor sign-in dropdown)
   qr_flutter: ^4.1.0
 
+  # Pusher Channels realtime notifications
+  pusher_client_socket: ^0.0.8
+
+  # Cross-platform notification sound playback
+  audioplayers: ^6.1.0
+
   # Kiosk mode: TV channel playback
   video_player: ^2.9.2
   chewie: ^1.8.5

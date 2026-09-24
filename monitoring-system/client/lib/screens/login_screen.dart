@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/notification_realtime_service.dart';
 import '../utils/validators.dart';
 import '../widgets/form_field.dart';
 import '../widgets/ministry_logo.dart';
@@ -47,6 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
           'This account is registered as ${user.role}. Select the ${user.role} login button.',
         );
       }
+      await NotificationRealtimeService().connect();
       if (!mounted) return;
       if (widget.embedded) {
         widget.onSignedIn?.call();
@@ -106,118 +108,112 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildFormColumn() {
     return Column(
       children: [
-                // Logo
-                const MinistryLogo(
-                  size: 88,
-                  fallbackColor: Color(0xFF2563EB),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Ministry of Planning and Investment',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFF0F172A),
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    height: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${_roleLabel(_selectedRole)} sign in',
-                  style:
-                      const TextStyle(color: Color(0xFF64748b), fontSize: 14),
-                ),
-                const SizedBox(height: 40),
+        // Logo
+        const MinistryLogo(
+          size: 88,
+          fallbackColor: Color(0xFF2563EB),
+        ),
+        const SizedBox(height: 20),
+        const Text(
+          'Ministry of Planning and Investment',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xFF0F172A),
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            height: 1.2,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '${_roleLabel(_selectedRole)} sign in',
+          style: const TextStyle(color: Color(0xFF64748b), fontSize: 14),
+        ),
+        const SizedBox(height: 40),
 
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('SELECT PORTAL',
-                      style: TextStyle(
-                        color: Color(0xFF64748b),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.2,
-                      )),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    _roleButton('admin', 'Admin', Icons.admin_panel_settings),
-                    const SizedBox(width: 8),
-                    _roleButton(
-                        'secretary', 'Secretary', Icons.assignment_ind),
-                  ],
-                ),
-                const SizedBox(height: 20),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text('SELECT PORTAL',
+              style: TextStyle(
+                color: Color(0xFF64748b),
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2,
+              )),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            _roleButton('admin', 'Admin', Icons.admin_panel_settings),
+            const SizedBox(width: 8),
+            _roleButton('secretary', 'Secretary', Icons.assignment_ind),
+          ],
+        ),
+        const SizedBox(height: 20),
 
-                // Card
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFFFFF),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0x14000000)),
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        if (_error != null) ...[
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: const Color(0x1AEF4444),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border(
-                                left: BorderSide(
-                                    color: const Color(0xFFef4444), width: 4),
-                              ),
-                            ),
-                            child: Text(_error!,
-                                style: const TextStyle(
-                                    color: Color(0xFFDC2626), fontSize: 13)),
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                        AppFormField(
-                          label: 'EMAIL ADDRESS',
-                          hint: 'you@example.com',
-                          controller: _emailCtrl,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: Validators.validateEmail,
-                        ),
-                        const SizedBox(height: 16),
-                        AppFormField(
-                          label: 'PASSWORD',
-                          hint: '••••••••',
-                          controller: _passCtrl,
-                          obscureText: _obscure,
-                          validator: (v) =>
-                              Validators.validateRequired(v, 'Password'),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscure
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: const Color(0xFF64748b),
-                              size: 20,
-                            ),
-                            onPressed: () =>
-                                setState(() => _obscure = !_obscure),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        SubmitButton(
-                          label: 'Sign In',
-                          icon: Icons.lock_open,
-                          loading: _loading,
-                          onPressed: _submit,
-                        ),
-                      ],
+        // Card
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFFFFF),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0x14000000)),
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                if (_error != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0x1AEF4444),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border(
+                        left: BorderSide(
+                            color: const Color(0xFFef4444), width: 4),
+                      ),
                     ),
+                    child: Text(_error!,
+                        style: const TextStyle(
+                            color: Color(0xFFDC2626), fontSize: 13)),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                AppFormField(
+                  label: 'EMAIL ADDRESS',
+                  hint: 'you@example.com',
+                  controller: _emailCtrl,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: Validators.validateEmail,
+                ),
+                const SizedBox(height: 16),
+                AppFormField(
+                  label: 'PASSWORD',
+                  hint: '••••••••',
+                  controller: _passCtrl,
+                  obscureText: _obscure,
+                  validator: (v) => Validators.validateRequired(v, 'Password'),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscure ? Icons.visibility_off : Icons.visibility,
+                      color: const Color(0xFF64748b),
+                      size: 20,
+                    ),
+                    onPressed: () => setState(() => _obscure = !_obscure),
                   ),
                 ),
+                const SizedBox(height: 24),
+                SubmitButton(
+                  label: 'Sign In',
+                  icon: Icons.lock_open,
+                  loading: _loading,
+                  onPressed: _submit,
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

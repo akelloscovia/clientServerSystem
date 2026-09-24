@@ -165,7 +165,7 @@ model visitor_logs {
   time_in          DateTime            @db.Time(0)
   reason_for_visit String              @db.VarChar(300)
   description      String?             @db.Text
-  status           visitor_logs_status @default(pending)
+  status           visitor_logs_status @default(waiting)
   assigned_to      Int?
   assigned_by      Int?
   assigned_at      DateTime?           @db.DateTime(0)
@@ -243,6 +243,7 @@ enum submissions_status {
 }
 
 enum visitor_logs_status {
+  waiting
   pending
   assigned
   attended

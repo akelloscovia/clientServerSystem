@@ -13,6 +13,7 @@ import VisitorLogDetail from './pages/VisitorLogDetail'
 import Programs from './pages/Programs'
 import Channels from './pages/Channels'
 import Advertisements from './pages/Advertisements'
+import StaffMessages from './pages/StaffMessages'
 
 function ProtectedLayout({ children }) {
   const { user, loading } = useAuth()
@@ -82,6 +83,9 @@ function AppRoutes() {
       } />
       <Route path="/audit-logs" element={
         <ProtectedLayout><AdminOnly><AuditLogs /></AdminOnly></ProtectedLayout>
+      } />
+      <Route path="/messages" element={
+        <ProtectedLayout><StaffOnly><StaffMessages /></StaffOnly></ProtectedLayout>
       } />
 
       <Route path="/" element={<Navigate to="/login" replace />} />

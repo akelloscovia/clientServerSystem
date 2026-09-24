@@ -7,7 +7,7 @@ class Visitor {
   final String? timeIn; // HH:MM
   final String reasonForVisit;
   final String? description;
-  final String status; // pending | assigned | attended | closed
+  final String status; // waiting | pending | assigned | attended | closed
   final int? assignedTo;
   final String? assignee;
   final String? createdAt;
@@ -36,7 +36,7 @@ class Visitor {
         timeIn: json['time_in'] as String?,
         reasonForVisit: json['reason_for_visit'] as String? ?? '',
         description: json['description'] as String?,
-        status: json['status'] as String? ?? 'pending',
+        status: json['status'] as String? ?? 'waiting',
         assignedTo: json['assigned_to'] as int?,
         assignee: json['assignee'] as String?,
         createdAt: json['created_at'] as String?,
@@ -45,7 +45,13 @@ class Visitor {
             .toList(),
       );
 
-  static const statuses = ['pending', 'assigned', 'attended', 'closed'];
+  static const statuses = [
+    'waiting',
+    'pending',
+    'assigned',
+    'attended',
+    'closed'
+  ];
 }
 
 class VisitorReply {

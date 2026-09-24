@@ -1,49 +1,32 @@
-// Basic smoke tests: the app boots into the unified MainShell when no user
-// session is stored, and the nav lets you move between the four sections
-// without throwing during the first frame.
+// Basic smoke tests for the logged-out entry screen.
 
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:monitoring_client/main.dart';
 
 void main() {
-  testWidgets('App boots into the main shell when logged out',
+  testWidgets('App boots into staff sign-in when logged out',
       (WidgetTester tester) async {
     await tester.pumpWidget(const MonitoringClientApp(isLoggedIn: false));
     await tester.pump();
 
-    // Every nav destination is present.
-    expect(find.text('Home'), findsWidgets);
-    expect(find.text('Programs'), findsWidgets);
-    expect(find.text('TV'), findsWidgets);
-    expect(find.text('Visitor Sign-In'), findsWidgets);
-    expect(find.text('Admin Portal'), findsWidgets);
+    expect(find.text('Ministry of Planning and Investment'), findsOneWidget);
+    expect(find.text('SELECT PORTAL'), findsOneWidget);
+    expect(find.text('Admin'), findsOneWidget);
+    expect(find.text('Secretary'), findsOneWidget);
+    expect(find.text('Sign In'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Admin Portal tab shows the staff sign-in form',
+  testWidgets('Secretary portal can be selected without throwing',
       (WidgetTester tester) async {
     await tester.pumpWidget(const MonitoringClientApp(isLoggedIn: false));
     await tester.pump();
 
-    await tester.tap(find.text('Admin Portal').last);
+    await tester.tap(find.text('Secretary'));
     await tester.pump();
 
-    expect(find.text('SELECT PORTAL'), findsOneWidget);
+    expect(find.text('Secretary workspace sign in'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

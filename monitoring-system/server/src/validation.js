@@ -80,7 +80,7 @@ export const advertisementSchema = z.object({
   is_active: z.boolean().default(true),
 });
 
-const VISITOR_STATUSES = ['pending', 'assigned', 'attended', 'closed'];
+const VISITOR_STATUSES = ['waiting', 'pending', 'assigned', 'attended', 'closed'];
 
 export const visitorCreateSchema = z.object({
   name: z.string().min(2).max(150),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/notification_realtime_service.dart';
 import '../widgets/dashboard/cases_section.dart';
 import '../widgets/dashboard/channel_manager.dart';
 import '../widgets/dashboard/dash_ui.dart';
@@ -45,8 +46,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
     _tabs = _isAdmin
         ? [
             _Tab('Overview', DashboardOverview(refreshSignal: _refresh)),
-            _Tab('Cases',
-                CasesSection(isAdmin: true, refreshSignal: _refresh)),
+            _Tab('Cases', CasesSection(isAdmin: true, refreshSignal: _refresh)),
             _Tab('Programmes', ProgramManager(refreshSignal: _refresh)),
             _Tab('Channels', ChannelManager(refreshSignal: _refresh)),
             _Tab('Visitors',
@@ -54,8 +54,8 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
             _Tab('Users', UserManager(refreshSignal: _refresh)),
           ]
         : [
-            _Tab('Cases',
-                CasesSection(isAdmin: false, refreshSignal: _refresh)),
+            _Tab(
+                'Cases', CasesSection(isAdmin: false, refreshSignal: _refresh)),
             _Tab('Programmes', ProgramManager(refreshSignal: _refresh)),
             _Tab('Visitors',
                 VisitorManager(isAdmin: false, refreshSignal: _refresh)),
@@ -69,6 +69,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
   }
 
   Future<void> _logout() async {
+    NotificationRealtimeService().disconnect();
     await _auth.logout();
     if (!mounted) return;
     if (widget.embedded) {
@@ -140,12 +141,9 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: active
-                    ? Dash.primary.withValues(alpha: 0.2)
-                    : Dash.card,
+                color: active ? Dash.primary.withValues(alpha: 0.2) : Dash.card,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                    color: active ? Dash.primary : Dash.line),
+                border: Border.all(color: active ? Dash.primary : Dash.line),
               ),
               child: Text(
                 _tabs[i].label,

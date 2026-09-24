@@ -83,6 +83,19 @@ export const submissionService = {
     return data
   },
 
+  async getNotificationTargets() {
+    const { data } = await api.get('/monitoring/notification-targets')
+    return data.users
+  },
+
+  async sendNotification(targetUserId, message) {
+    const { data } = await api.post('/monitoring/notifications', {
+      target_user_id: targetUserId,
+      message,
+    })
+    return data
+  },
+
   async markNotificationRead(id) {
     return api.patch(`/monitoring/notifications/${id}/read`)
   },

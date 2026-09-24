@@ -9,4 +9,10 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET || 'jwt-dev-secret',
   jwtAccessTtl: parseInt(process.env.JWT_ACCESS_TTL || '3600', 10),
   jwtRefreshTtl: parseInt(process.env.JWT_REFRESH_TTL || '2592000', 10),
+  pusher: {
+    appId: process.env.PUSHER_APP_ID || '',
+    key: process.env.PUSHER_KEY || '',
+    secret: process.env.PUSHER_SECRET || '',
+    cluster: process.env.PUSHER_CLUSTER || 'mt1',
+  },
 };

@@ -1,9 +1,12 @@
 import { NavLink, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import {
   LayoutDashboard, ClipboardList, ScrollText, Calendar,
   Megaphone, Tv, Users, Search, LogOut,
 } from 'lucide-react'
+import Pusher from 'pusher-js'
 import { useAuth } from '../context/AuthContext'
+import { submissionService } from '../services/submissions'
 import ministryLogo from '../assets/ministry_logo.jpg'
 import './Sidebar.css'
 
@@ -16,11 +19,41 @@ const NAV_ITEMS = [
   { path: '/channels', label: 'TV Channels', icon: Tv, roles: ['admin'] },
   { path: '/users', label: 'Users', icon: Users, roles: ['admin'] },
   { path: '/audit-logs', label: 'Audit Logs', icon: Search, roles: ['admin'] },
+  { path: '/messages', label: 'Staff Messages', icon: Search, roles: ['admin', 'secretary'] },
 ]
 
 export default function Sidebar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [unread, setUnread] = useState(0)
+
+  useEffect(() => {
+    let channel
+    let client
+    submissionService.getNotifications().then(data => setUnread(data.unread_count || 0)).catch(() => {})
+
+    const pusherKey = import.meta.env.VITE_PUSHER_KEY || ''
+    const pusherCluster = import.meta.env.VITE_PUSHER_CLUSTER || 'mt1'
+
+    if (!user?.id || !pusherKey) return undefined
+
+    try {
+      client = new Pusher(pusherKey, {
+        cluster: pusherCluster,
+        authEndpoint: '/api/pusher/auth',
+        auth: { headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` } },
+      })
+      channel = client.subscribe(`private-user-${user.id}`)
+      channel.bind('notification.created', () => setUnread(value => value + 1))
+    } catch (error) {
+      console.error('Pusher initialization failed:', error)
+    }
+
+    return () => {
+      channel?.unbind_all()
+      client?.disconnect()
+    }
+  }, [user?.id])
 
   const handleLogout = () => {
     logout()
@@ -63,6 +96,7 @@ export default function Sidebar() {
           >
             <item.icon className="nav-icon" size={18} strokeWidth={2} />
             <span className="nav-label">{item.label}</span>
+            {item.path === '/messages' && unread > 0 && <span className="nav-badge">{unread}</span>}
           </NavLink>
         ))}
       </nav>

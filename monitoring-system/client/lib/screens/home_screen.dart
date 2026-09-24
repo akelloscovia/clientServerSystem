@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/submission.dart';
 import '../services/auth_service.dart';
 import '../services/submission_service.dart';
+import '../services/notification_realtime_service.dart';
 import '../widgets/status_card.dart';
 import 'submission_screen.dart';
 import 'submission_status_screen.dart';
@@ -17,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _subService = SubmissionService();
   final _authService = AuthService();
+  final _realtime = NotificationRealtimeService();
   List<Submission> _submissions = [];
   bool _loading = true;
   String? _error;
@@ -43,8 +45,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _realtime.addListener(_onRealtimeNotification);
     _load();
     _loadNotifications();
+  }
+
+  @override
+  void dispose() {
+    _realtime.removeListener(_onRealtimeNotification);
+    super.dispose();
+  }
+
+  void _onRealtimeNotification(Map<String, dynamic> _) {
+    if (mounted) setState(() => _unread++);
   }
 
   Future<void> _load() async {
@@ -72,6 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _logout() async {
+    _realtime.disconnect();
     await _authService.logout();
     if (mounted) {
       Navigator.of(context).pushReplacement(

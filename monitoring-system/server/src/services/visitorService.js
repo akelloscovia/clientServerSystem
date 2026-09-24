@@ -81,7 +81,9 @@ export async function assignVisitor(id, assignedTo, actor) {
       assigned_to: assignedTo,
       assigned_by: actor.id,
       assigned_at: new Date(),
-      status: visitor.status === 'pending' ? 'assigned' : visitor.status,
+      status: ['waiting', 'pending'].includes(visitor.status)
+        ? 'assigned'
+        : visitor.status,
     },
     include: { assigned_user: true },
   });

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/notification_realtime_service.dart';
 import '../utils/validators.dart';
 import '../widgets/form_field.dart';
 import '../widgets/submit_button.dart';
@@ -32,6 +33,7 @@ class _ClientAccessScreenState extends State<ClientAccessScreen> {
     });
     try {
       await _auth.loginByEmail(_emailCtrl.text, name: _nameCtrl.text);
+      await NotificationRealtimeService().connect();
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const HomeScreen()),
@@ -81,7 +83,8 @@ class _ClientAccessScreenState extends State<ClientAccessScreen> {
                           )
                         ],
                       ),
-                      child: const Icon(Icons.person, size: 36, color: Colors.white),
+                      child: const Icon(Icons.person,
+                          size: 36, color: Colors.white),
                     ),
                     const SizedBox(height: 20),
                     const Text(
@@ -120,12 +123,14 @@ class _ClientAccessScreenState extends State<ClientAccessScreen> {
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border(
                                     left: BorderSide(
-                                        color: const Color(0xFFef4444), width: 4),
+                                        color: const Color(0xFFef4444),
+                                        width: 4),
                                   ),
                                 ),
                                 child: Text(_error!,
                                     style: const TextStyle(
-                                        color: Color(0xFFDC2626), fontSize: 13)),
+                                        color: Color(0xFFDC2626),
+                                        fontSize: 13)),
                               ),
                               const SizedBox(height: 16),
                             ],

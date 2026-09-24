@@ -4,6 +4,7 @@ import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_shell.dart';
 import 'services/auth_service.dart';
+import 'services/notification_realtime_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +21,9 @@ void main() async {
 
   final authService = AuthService();
   final user = await authService.restoreSession();
+  if (user != null) {
+    await NotificationRealtimeService().connect();
+  }
 
   runApp(MonitoringClientApp(isLoggedIn: user != null));
 }
@@ -52,8 +56,10 @@ class MonitoringClientApp extends StatelessWidget {
           centerTitle: false,
         ),
         dialogTheme: const DialogThemeData(backgroundColor: Colors.white),
-        datePickerTheme: const DatePickerThemeData(backgroundColor: Colors.white),
-        timePickerTheme: const TimePickerThemeData(backgroundColor: Colors.white),
+        datePickerTheme:
+            const DatePickerThemeData(backgroundColor: Colors.white),
+        timePickerTheme:
+            const TimePickerThemeData(backgroundColor: Colors.white),
       ),
       // The app opens on the login screen; signing in leads to the home
       // page (MainShell). A restored session skips the login screen — a

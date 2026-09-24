@@ -73,6 +73,27 @@ class SubmissionService {
     ApiService.checkError(resp);
   }
 
+  Future<void> sendNotificationToUser(int targetUserId, String message) async {
+    final resp = await _api.post('/monitoring/notifications', {
+      'target_user_id': targetUserId,
+      'message': message.trim(),
+    });
+    ApiService.checkError(resp);
+  }
+
+  Future<void> notifySecretaries(String message) async {
+    final secretaries = await getSecretaries();
+    if (secretaries.isEmpty) return;
+    for (final secretary in secretaries) {
+      try {
+        await sendNotificationToUser(secretary.id, message);
+      } catch (_) {
+        // Ignore individual failures so one unavailable secretary does not stop
+        // the minister-ready notification flow for the rest of the office.
+      }
+    }
+  }
+
   Future<void> assignSubmission(int id, int secretaryId,
       {String notes = ''}) async {
     final resp = await _api.post('/submissions/assign', {
