@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/notification_realtime_service.dart';
 import '../utils/app_colors.dart';
 import 'programs_view.dart';
 import 'tv_channel_view.dart';
@@ -23,9 +25,45 @@ class _KioskHomeViewState extends State<KioskHomeView> {
   bool _tvOnRight = true;
   KioskRole _role = KioskRole.reception;
   bool _visitorDialogOpen = false;
+  final _realtime = NotificationRealtimeService();
+  Timer? _bannerTimer;
+  String? _visitorBanner;
+  bool _visitorWasAllowedIn = false;
 
   bool get _canSeeMinisterView =>
       AuthService().currentUser?.role != 'secretary';
+
+  @override
+  void initState() {
+    super.initState();
+    _realtime.addListener(_onRealtimeEvent);
+  }
+
+  @override
+  void dispose() {
+    _bannerTimer?.cancel();
+    _realtime.removeListener(_onRealtimeEvent);
+    super.dispose();
+  }
+
+  void _onRealtimeEvent(Map<String, dynamic> event) {
+    if (event['type'] != 'visitor.updated' || !mounted) return;
+    final visitor = event['visitor'];
+    if (visitor is! Map) return;
+    final name = visitor['name'] as String? ?? 'Visitor';
+    final status = visitor['status'] as String?;
+    if (status != 'attended' && status != 'pending') return;
+    _bannerTimer?.cancel();
+    setState(() {
+      _visitorWasAllowedIn = status == 'attended';
+      _visitorBanner = _visitorWasAllowedIn
+          ? '$name has been allowed in.'
+          : '$name has been postponed.';
+    });
+    _bannerTimer = Timer(const Duration(seconds: 8), () {
+      if (mounted) setState(() => _visitorBanner = null);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +77,48 @@ class _KioskHomeViewState extends State<KioskHomeView> {
     return Column(
       children: [
         if (_canSeeMinisterView) _buildRoleToggle(),
+        if (_role == KioskRole.reception && _visitorBanner != null)
+          _buildVisitorBanner(),
         Expanded(child: _buildSideBySideLayout(mainPane)),
       ],
+    );
+  }
+
+  Widget _buildVisitorBanner() {
+    final color = _visitorWasAllowedIn
+        ? const Color(0xFF15803D)
+        : const Color(0xFFB45309);
+    return Material(
+      color: color,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+        child: Row(
+          children: [
+            Icon(
+              _visitorWasAllowedIn
+                  ? Icons.check_circle_outline
+                  : Icons.schedule_outlined,
+              color: Colors.white,
+              size: 20,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                _visitorBanner!,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            IconButton(
+              tooltip: 'Dismiss notification',
+              onPressed: () => setState(() => _visitorBanner = null),
+              icon: const Icon(Icons.close, color: Colors.white, size: 18),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

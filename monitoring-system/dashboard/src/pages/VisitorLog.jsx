@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { RefreshCw } from 'lucide-react'
+import Pusher from 'pusher-js'
 import { visitorService } from '../services/visitors'
 import VisitorTable from '../components/VisitorTable'
 
@@ -32,6 +33,22 @@ export default function VisitorLog() {
   }, [page, statusFilter])
 
   useEffect(() => { load() }, [load])
+
+  useEffect(() => {
+    const pusherKey = import.meta.env.VITE_PUSHER_KEY || ''
+    if (!pusherKey) return undefined
+
+    const client = new Pusher(pusherKey, {
+      cluster: import.meta.env.VITE_PUSHER_CLUSTER || 'mt1',
+    })
+    const channel = client.subscribe('visitor-updates')
+    channel.bind('visitor.updated', load)
+
+    return () => {
+      channel.unbind('visitor.updated', load)
+      client.disconnect()
+    }
+  }, [load])
 
   return (
     <div>

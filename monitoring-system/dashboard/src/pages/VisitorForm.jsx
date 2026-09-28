@@ -38,7 +38,11 @@ export default function VisitorForm() {
       setTicket(visitor)
     } catch (err) {
       const messages = err.response?.data?.errors
-      setError(messages ? Object.values(messages).flat().join(' ') : 'Failed to submit. Please try again.')
+      const serverError = err.response?.data?.error || err.response?.data?.message
+      const validationError = messages
+        ? Object.values(messages).flat().filter(Boolean).join(' ')
+        : ''
+      setError(validationError || serverError || err.message || 'Failed to submit. Please try again.')
     } finally {
       setLoading(false)
     }

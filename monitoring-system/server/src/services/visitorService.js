@@ -2,6 +2,7 @@ import { prisma } from '../db.js';
 import { HttpError } from '../utils/httpError.js';
 import { visitorDict, visitorReplyDict } from '../utils/serialize.js';
 import { parseHHMM, parseDateOnly } from '../utils/dates.js';
+import { publishVisitorUpdate } from './audit.js';
 
 const REPLIES_INCLUDE = {
   replies: { include: { responder: true }, orderBy: { created_at: 'asc' } },
@@ -25,6 +26,7 @@ export async function createVisitor(data) {
       description: data.description || null,
     },
   });
+  publishVisitorUpdate(visitorDict(visitor));
   return {
     status: 201,
     body: { message: 'Thank you. Your visit has been logged.', visitor: visitorDict(visitor) },
@@ -65,6 +67,7 @@ export async function updateVisitorStatus(id, status) {
   const v = await prisma.visitor_logs.update({
     where: { id }, data: { status }, include: { assigned_user: true },
   });
+  publishVisitorUpdate(visitorDict(v));
   return { message: 'Status updated.', visitor: visitorDict(v) };
 }
 

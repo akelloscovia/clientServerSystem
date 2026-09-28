@@ -5,6 +5,7 @@ import '../models/visitor.dart';
 import '../services/auth_service.dart';
 import '../services/submission_service.dart';
 import '../services/visitor_service.dart';
+import '../services/notification_realtime_service.dart';
 import '../utils/app_colors.dart';
 
 /// The Minister's visitor queue: everyone still waiting to be seen (status
@@ -27,18 +28,25 @@ class _VisitorQueueViewState extends State<VisitorQueueView> {
   int? _updatingVisitorId;
   String? _error;
   Timer? _pollTimer;
+  final _realtime = NotificationRealtimeService();
 
   @override
   void initState() {
     super.initState();
     _load();
     _pollTimer = Timer.periodic(const Duration(seconds: 20), (_) => _load());
+    _realtime.addListener(_onRealtimeEvent);
   }
 
   @override
   void dispose() {
     _pollTimer?.cancel();
+    _realtime.removeListener(_onRealtimeEvent);
     super.dispose();
+  }
+
+  void _onRealtimeEvent(Map<String, dynamic> event) {
+    if (event['type'] == 'visitor.updated') _load();
   }
 
   Future<void> _load() async {

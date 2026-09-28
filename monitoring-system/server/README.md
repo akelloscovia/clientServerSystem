@@ -50,7 +50,10 @@ Put the public `PUSHER_KEY` and `PUSHER_CLUSTER` in the dashboard `.env` as
 `VITE_PUSHER_KEY` and `VITE_PUSHER_CLUSTER`. The server authenticates each
 private `private-user-{id}` channel with the logged-in JWT. Staff can send
 notifications from the Staff Messages page; notifications are also stored in
-the database, so they are not lost when a recipient is offline.
+the database, so they are not lost when a recipient is offline. Visitor
+creation and status changes are also published on the public
+`visitor-updates` channel as `visitor.updated`, allowing reception and
+minister kiosk views to refresh immediately.
 
 ## The database schema
 

@@ -39,6 +39,20 @@ export function userNotificationChannel(userId) {
   return `private-user-${userId}`;
 }
 
+export function visitorUpdatesChannel() {
+  return 'visitor-updates';
+}
+
+/** Publish visitor changes to reception and minister kiosk clients. */
+export function publishVisitorUpdate(visitor) {
+  const clientPusher = getPusher();
+  if (!clientPusher) return;
+  clientPusher.trigger(visitorUpdatesChannel(), 'visitor.updated', {
+    type: 'visitor.updated',
+    visitor,
+  }).catch((error) => console.error('Pusher visitor update failed:', error.message));
+}
+
 /** Create an in-app notification and publish the same payload to Pusher. */
 export async function notifyUser(client, userId, submissionId, message) {
   const notification = await client.notifications.create({

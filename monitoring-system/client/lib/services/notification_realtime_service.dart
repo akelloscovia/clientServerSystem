@@ -17,6 +17,7 @@ class NotificationRealtimeService {
 
   PusherClient? _client;
   Channel? _channel;
+  Channel? _visitorChannel;
   int _unread = 0;
   int get unread => _unread;
   final List<void Function(Map<String, dynamic>)> _listeners = [];
@@ -64,12 +65,24 @@ class NotificationRealtimeService {
         listener(notification);
       }
     });
+
+    _visitorChannel =
+        client.channel<Channel>('visitor-updates', subscribe: true);
+    _visitorChannel!.bind('visitor.updated', (data) {
+      final decoded = data is String ? jsonDecode(data) : data;
+      if (decoded is! Map) return;
+      for (final listener in List.of(_listeners)) {
+        listener(Map<String, dynamic>.from(decoded));
+      }
+    });
   }
 
   void disconnect() {
     _channel?.unsubscribe();
+    _visitorChannel?.unsubscribe();
     _client?.disconnect();
     _channel = null;
+    _visitorChannel = null;
     _client = null;
     _unread = 0;
   }

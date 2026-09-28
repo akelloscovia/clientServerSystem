@@ -4,6 +4,7 @@ import '../../models/user.dart';
 import '../../models/visitor.dart';
 import '../../services/submission_service.dart';
 import '../../services/visitor_service.dart';
+import '../../services/notification_realtime_service.dart';
 import 'dash_ui.dart';
 
 /// Staff view of the walk-in visitor sign-in log. Everyone can re-status and
@@ -25,18 +26,25 @@ class _VisitorManagerState extends State<VisitorManager> {
   bool _loading = true;
   String? _error;
   String _filter = '';
+  final _realtime = NotificationRealtimeService();
 
   @override
   void initState() {
     super.initState();
     _load();
     widget.refreshSignal?.addListener(_load);
+    _realtime.addListener(_onRealtimeEvent);
   }
 
   @override
   void dispose() {
     widget.refreshSignal?.removeListener(_load);
+    _realtime.removeListener(_onRealtimeEvent);
     super.dispose();
+  }
+
+  void _onRealtimeEvent(Map<String, dynamic> event) {
+    if (event['type'] == 'visitor.updated') _load();
   }
 
   Future<void> _load() async {
