@@ -122,7 +122,7 @@ export default function VisitorForm() {
         </div>
 
         <button type="submit" className="btn btn-primary btn-lg w-full" disabled={loading} id="btn-submit-visitor">
-          {loading ? 'Submitting...' : 'Sign In'}
+          {loading ? 'Submitting...' : 'Submit'}
         </button>
       </form>
     </div>

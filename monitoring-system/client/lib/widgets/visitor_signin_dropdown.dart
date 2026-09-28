@@ -295,7 +295,7 @@ class _VisitorPanelState extends State<_VisitorPanel> {
                 ),
                 const SizedBox(height: 18),
                 SubmitButton(
-                  label: 'Sign In',
+                  label: 'Submit',
                   icon: Icons.how_to_reg,
                   loading: _loading,
                   onPressed: _submit,
